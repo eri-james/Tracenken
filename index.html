@@ -42,10 +42,15 @@
   .flame-text{background:linear-gradient(135deg,#ff7e5f 0%,#ffb347 50%,#ff6b9d 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
   .rainbow-text{background:linear-gradient(90deg,#ff7e5f,#ffb347,#88d8a8,#7ed8d8,#ffb6c1);-webkit-background-clip:text;background-clip:text;color:transparent}
   #particles{position:fixed;inset:0;pointer-events:none;z-index:1}
-  .nav-blur{background:rgba(255,248,240,.7);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid rgba(255,255,255,.6)}
-  .nav-link{position:relative;transition:color .3s}
+  .nav-blur{background:rgba(255,248,240,.8);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid rgba(255,255,255,.6)}
+  .nav-link{position:relative;transition:color .3s;cursor:pointer}
   .nav-link::after{content:'';position:absolute;bottom:-4px;left:50%;width:0;height:2px;background:linear-gradient(90deg,#ff7e5f,#ffb347);border-radius:2px;transition:all .3s;transform:translateX(-50%)}
   .nav-link:hover::after,.nav-link.active::after{width:100%}
+  
+  /* SPA Pages */
+  .page { display: none; opacity: 0; transition: opacity 0.4s ease; }
+  .page.active { display: block; opacity: 1; }
+
   .tab-btn{padding:10px 18px;border-radius:16px;font-weight:700;transition:all .3s;cursor:pointer;border:1px solid transparent;background:rgba(255,255,255,.3);color:var(--ink-soft);white-space:nowrap;font-size:14px}
   .tab-btn:hover{background:rgba(255,255,255,.6);color:var(--ink)}
   .tab-btn.active{background:white;color:var(--flame);box-shadow:0 4px 16px rgba(255,126,95,.25);border-color:rgba(255,126,95,.2)}
@@ -96,6 +101,23 @@
   .timeline-line{position:absolute;left:24px;top:0;bottom:0;width:4px;background:linear-gradient(180deg,#88d8a8,#7ed8d8,#ffb347,#ff7e5f);border-radius:2px}
   .timeline-item{position:relative;padding-left:70px;margin-bottom:2rem}
   .timeline-dot{position:absolute;left:8px;top:8px;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:14px;box-shadow:0 0 0 4px rgba(255,255,255,.8), 0 4px 12px rgba(0,0,0,.1);z-index:2}
+
+  /* Video Gallery */
+  .video-card { cursor: pointer; transition: all 0.4s; }
+  .video-card:hover { transform: translateY(-8px); }
+  .video-card .thumb { position: relative; overflow: hidden; border-radius: 16px; }
+  .video-card .thumb img { transition: transform 0.5s; width: 100%; height: 100%; object-fit: cover; }
+  .video-card:hover .thumb img { transform: scale(1.1); }
+  .play-btn { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.2); transition: background 0.3s; }
+  .video-card:hover .play-btn { background: rgba(0,0,0,0.4); }
+  .play-icon { width: 60px; height: 60px; background: rgba(255,255,255,0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--flame); font-size: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: transform 0.3s; }
+  .video-card:hover .play-icon { transform: scale(1.1); background: white; }
+  .video-modal { position: fixed; inset: 0; z-index: 100; display: none; align-items: center; justify-content: center; padding: 1rem; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); }
+  .video-modal.active { display: flex; }
+  .video-frame-wrapper { width: 100%; max-width: 900px; background: rgba(255,255,255,0.1); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.3); border-radius: 24px; padding: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+  .video-frame { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 16px; }
+  .video-frame iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+
   @media (max-width:768px){.hero-title{font-size:2.5rem}}
 </style>
 </head>
@@ -112,7 +134,7 @@
 <!-- Navigation -->
 <nav class="nav-blur fixed top-0 left-0 right-0 z-50">
   <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-3 cursor-pointer" onclick="navigateTo('page-home')">
       <div class="w-10 h-10 rounded-2xl flex items-center justify-center text-white shadow-lg" style="background:linear-gradient(135deg,#ff7e5f,#ffb347)">
         <i class="fas fa-bowl-rice"></i>
       </div>
@@ -122,606 +144,414 @@
       </div>
     </div>
     <div class="hidden md:flex items-center gap-7 text-sm font-bold" style="color:var(--ink-soft)">
-      <a href="#story" class="nav-link">Story</a>
-      <a href="#rules" class="nav-link">Rules</a>
-      <a href="#regions" class="nav-link">Regions</a>
-      <a href="#guide" class="nav-link">Guide</a>
-      <a href="#mechanics" class="nav-link">Mechanics</a>
-      <a href="#ultimate" class="nav-link">Ultimate</a>
+      <span class="nav-link active" data-nav="page-home" onclick="navigateTo('page-home')">Story & Rules</span>
+      <span class="nav-link" data-nav="page-regions" onclick="navigateTo('page-regions')">Regions</span>
+      <span class="nav-link" data-nav="page-deep" onclick="navigateTo('page-deep')">Guide & Mechanics</span>
+      <span class="nav-link" data-nav="page-gallery" onclick="navigateTo('page-gallery')"><i class="fab fa-youtube mr-1 text-red-500"></i>Gallery</span>
     </div>
-    <a href="#story" class="hidden md:inline-flex items-center gap-2 px-4 py-2 rounded-2xl text-sm font-bold text-white" style="background:linear-gradient(135deg,#ff7e5f,#ffb347)">
+    <button onclick="navigateTo('page-home')" class="hidden md:inline-flex items-center gap-2 px-4 py-2 rounded-2xl text-sm font-bold text-white" style="background:linear-gradient(135deg,#ff7e5f,#ffb347)">
       Start <i class="fas fa-arrow-right text-xs"></i>
-    </a>
+    </button>
   </div>
 </nav>
 
-<!-- HERO -->
-<section class="relative min-h-screen flex items-center pt-24 pb-12 px-6 z-10">
-  <div class="max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-12 items-center">
-    <div class="reveal">
-      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-pink mb-6">
-        <span class="glow-dot" style="color:#ff7e5f;background:#ff7e5f"></span>
-        <span class="text-xs font-bold" style="color:var(--ink)">Translated by SizzledStar · Updated June 30, 2026</span>
-      </div>
-      <h1 class="hero-title font-display mb-6">
-        <span class="block" style="color:var(--ink)">Welcome!</span>
-        <span class="block flame-text">Tracen-ken</span>
-        <span class="block text-3xl md:text-4xl mt-3 font-bold" style="color:var(--ink-soft)">Ramen Jamboree</span>
-      </h1>
-      <p class="text-lg leading-relaxed mb-8 max-w-lg" style="color:var(--ink-soft)">
-        Umamusumes decided to hold a nationwide ramen event to repay their fans. With support from Tazuna Hayakawa and Light Hello, Tracen-ken opens its doors for the 14th training scenario.
-      </p>
-      <div class="flex flex-wrap gap-3">
-        <a href="#guide" class="px-6 py-3 rounded-2xl font-bold text-white shadow-lg hover:scale-105 transition-transform" style="background:linear-gradient(135deg,#ff7e5f,#ffb347)">
-          <i class="fas fa-route mr-2"></i>View Strategy Guide
-        </a>
-        <a href="#rules" class="px-6 py-3 rounded-2xl font-bold glass" style="color:var(--ink)">
-          <i class="fas fa-book-open mr-2"></i>Scenario Rules
-        </a>
-      </div>
-      <div class="grid grid-cols-3 gap-4 mt-10">
-        <div class="glass p-4 text-center">
-          <div class="text-2xl font-display flame-text">10</div>
-          <div class="text-xs font-bold" style="color:var(--ink-soft)">Regions</div>
-        </div>
-        <div class="glass p-4 text-center">
-          <div class="text-2xl font-display flame-text">6</div>
-          <div class="text-xs font-bold" style="color:var(--ink-soft)">Skill Evolutions</div>
-        </div>
-        <div class="glass p-4 text-center">
-          <div class="text-2xl font-display flame-text">3</div>
-          <div class="text-xs font-bold" style="color:var(--ink-soft)">Ultimate Ramen</div>
-        </div>
-      </div>
-    </div>
-    <div class="reveal relative h-[400px] md:h-[500px] lg:h-[600px]">
-      <div id="ramen-3d-container" class="absolute inset-0 pulse-glow rounded-[40px]"></div>
-      <div class="absolute top-8 left-4 glass-pink px-3 py-2 text-xs font-bold floating-label z-10">
-        <i class="fas fa-fire" style="color:#ff7e5f"></i> Hot & Fresh
-      </div>
-      <div class="absolute bottom-12 right-4 glass-cyan px-3 py-2 text-xs font-bold floating-label z-10" style="animation-delay:-2s">
-        <i class="fas fa-utensils"></i> Tasting Party
-      </div>
-      <div class="absolute top-1/2 -right-2 glass-orange px-3 py-2 text-xs font-bold floating-label z-10" style="animation-delay:-1s">
-        <i class="fas fa-star" style="color:#ffb347"></i> 14th Scenario
-      </div>
-    </div>
-  </div>
-</section>
+<!-- Main SPA Container -->
+<main id="app-view" class="relative z-10 pt-24 pb-12 px-6">
 
-<!-- Marquee -->
-<div class="relative z-10 py-4 overflow-hidden">
-  <div class="flex marquee-track whitespace-nowrap gap-8 font-display text-2xl" style="color:var(--ink-soft);opacity:.5">
-    <span>濃厚味噌ラーメン</span><span>·</span><span>すっきり塩ラーメン</span><span>·</span>
-    <span>岩のり背脂ラーメン</span><span>·</span><span>あっさり醤油ラーメン</span><span>·</span>
-    <span>ガッツリ豚ラーメン</span><span>·</span><span>玉ねぎ醤油ラーメン</span><span>·</span>
-    <span>ウマ辛名古屋ラーメン</span><span>·</span><span>背脂ねぎラーメン</span><span>·</span>
-    <span>甘口醤油ラーメン</span><span>·</span>
-    <span>濃厚味噌ラーメン</span><span>·</span><span>すっきり塩ラーメン</span><span>·</span>
-    <span>岩のり背脂ラーメン</span><span>·</span><span>あっさり醤油ラーメン</span><span>·</span>
-    <span>ガッツリ豚ラーメン</span><span>·</span><span>玉ねぎ醤油ラーメン</span><span>·</span>
-    <span>ウマ辛名古屋ラーメン</span><span>·</span><span>背脂ねぎラーメン</span><span>·</span>
-    <span>甘口醤油ラーメン</span><span>·</span>
-  </div>
-</div>
-
-<!-- STORY -->
-<section id="story" class="relative z-10 py-20 px-6">
-  <div class="max-w-6xl mx-auto">
-    <div class="text-center mb-12 reveal">
-      <div class="chip mb-4" style="background:rgba(255,182,193,.3);color:var(--flame)">
-        <i class="fas fa-book"></i> Story
-      </div>
-      <h2 class="text-4xl md:text-5xl font-display mb-4" style="color:var(--ink)">A Bowl of <span class="flame-text">Gratitude</span></h2>
-      <p class="text-lg max-w-2xl mx-auto" style="color:var(--ink-soft)">A nationwide ramen event, fueled by thankfulness and trained to perfection.</p>
-    </div>
-    <div class="grid md:grid-cols-2 gap-6">
-      <div class="glass p-8 reveal">
-        <div class="flex items-start gap-4 mb-4">
-          <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-white" style="background:linear-gradient(135deg,#ffb6c1,#ffb347)">
-            <i class="fas fa-heart text-xl"></i>
-          </div>
-          <div>
-            <h3 class="font-display text-xl mb-1" style="color:var(--ink)">The Story</h3>
-            <div class="text-xs font-bold" style="color:var(--ink-soft)">WHY RAMEN?</div>
-          </div>
+  <!-- PAGE 1: HOME (Story & Rules) -->
+  <section id="page-home" class="page active">
+    <!-- HERO -->
+    <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center mb-20">
+      <div class="reveal visible">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-pink mb-6">
+          <span class="glow-dot" style="color:#ff7e5f;background:#ff7e5f"></span>
+          <span class="text-xs font-bold" style="color:var(--ink)">Translated by SizzledStar · Updated June 30, 2026</span>
         </div>
-        <p class="leading-relaxed" style="color:var(--ink)">Wanting to repay their fans with ramen, Umamusumes decided to hold a nationwide ramen event. With support from Tazuna Hayakawa and Light Hello, Tracen-ken now opens its doors!</p>
-      </div>
-      <div class="glass p-8 reveal">
-        <div class="flex items-start gap-4 mb-4">
-          <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-white" style="background:linear-gradient(135deg,#88d8a8,#7ed8d8)">
-            <i class="fas fa-bullseye text-xl"></i>
-          </div>
-          <div>
-            <h3 class="font-display text-xl mb-1" style="color:var(--ink)">Training Goal</h3>
-            <div class="text-xs font-bold" style="color:var(--ink-soft)">YOUR OBJECTIVE</div>
-          </div>
+        <h1 class="hero-title font-display mb-6">
+          <span class="block" style="color:var(--ink)">Welcome!</span>
+          <span class="block flame-text">Tracen-ken</span>
+          <span class="block text-3xl md:text-4xl mt-3 font-bold" style="color:var(--ink-soft)">Ramen Jamboree</span>
+        </h1>
+        <p class="text-lg leading-relaxed mb-8 max-w-lg" style="color:var(--ink-soft)">
+          Umamusumes decided to hold a nationwide ramen event to repay their fans. With support from Tazuna Hayakawa and Light Hello, Tracen-ken opens its doors for the 14th training scenario.
+        </p>
+        <div class="flex flex-wrap gap-3">
+          <button onclick="navigateTo('page-deep')" class="px-6 py-3 rounded-2xl font-bold text-white shadow-lg hover:scale-105 transition-transform" style="background:linear-gradient(135deg,#ff7e5f,#ffb347)">
+            <i class="fas fa-route mr-2"></i>Strategy Guide
+          </button>
+          <button onclick="document.getElementById('rules-section').scrollIntoView({behavior:'smooth'})" class="px-6 py-3 rounded-2xl font-bold glass" style="color:var(--ink)">
+            <i class="fas fa-book-open mr-2"></i>Scenario Rules
+          </button>
         </div>
-        <p class="leading-relaxed mb-3" style="color:var(--ink)">Your goal is participating in the Twinkle Series, as well as training your ramen skills to lead the nationwide ramen event to success.</p>
-        <p class="text-sm" style="color:var(--ink-soft)"><i class="fas fa-calendar-day mr-2" style="color:var(--flame)"></i>At the end of the year, the Ramen Jamboree is held to check your progress.</p>
-      </div>
-    </div>
-    <div class="mt-8 glass p-5 reveal" style="border-left:4px solid #ffb347">
-      <div class="flex items-start gap-3">
-        <i class="fas fa-info-circle mt-1" style="color:#ffb347"></i>
-        <div>
-          <div class="font-bold text-sm mb-1" style="color:var(--ink)">Disclaimer</div>
-          <p class="text-xs leading-relaxed" style="color:var(--ink-soft)">This document is a word-to-word translation. No in-depth strategy guidance. Information is based on the official website and early play reports; may be inaccurate or outdated. Take with a grain of salt. Free to share with credit to SizzledStar.</p>
+        <div class="grid grid-cols-3 gap-4 mt-10">
+          <div class="glass p-4 text-center"><div class="text-2xl font-display flame-text">10</div><div class="text-xs font-bold" style="color:var(--ink-soft)">Regions</div></div>
+          <div class="glass p-4 text-center"><div class="text-2xl font-display flame-text">6</div><div class="text-xs font-bold" style="color:var(--ink-soft)">Evolutions</div></div>
+          <div class="glass p-4 text-center"><div class="text-2xl font-display flame-text">3</div><div class="text-xs font-bold" style="color:var(--ink-soft)">Ultimates</div></div>
         </div>
       </div>
-    </div>
-  </div>
-</section>
-
-<!-- SCENARIO RULES -->
-<section id="rules" class="relative z-10 py-20 px-6">
-  <div class="max-w-7xl mx-auto">
-    <div class="text-center mb-12 reveal">
-      <div class="chip mb-4" style="background:rgba(255,179,71,.3);color:var(--flame)">
-        <i class="fas fa-scroll"></i> Scenario Rules
-      </div>
-      <h2 class="text-4xl md:text-5xl font-display mb-4" style="color:var(--ink)">The <span class="flame-text">Rules</span> of the Kitchen</h2>
-      <p class="text-lg max-w-2xl mx-auto" style="color:var(--ink-soft)">Character effects, stat caps, skill evolution, and signature skills.</p>
-    </div>
-    <div class="flex flex-wrap gap-2 justify-center mb-8 reveal">
-      <button class="tab-btn active" data-tab="characters"><i class="fas fa-user-friends mr-1"></i>Character Effects</button>
-      <button class="tab-btn" data-tab="stats"><i class="fas fa-chart-bar mr-1"></i>Stat Caps</button>
-      <button class="tab-btn" data-tab="evolution"><i class="fas fa-sync-alt mr-1"></i>Skill Evolution</button>
-      <button class="tab-btn" data-tab="scenario-skill"><i class="fas fa-star mr-1"></i>Scenario Skills</button>
-    </div>
-
-    <!-- Character Effects -->
-    <div id="tab-characters" class="tab-content reveal">
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-        <div class="glass-pink p-5 info-card">
-          <div class="flex items-center justify-between mb-3">
-            <h4 class="font-display text-lg">Fine Motion</h4>
-            <span class="chip" style="background:rgba(255,182,193,.4);color:#c0345e">Training</span>
-          </div>
-          <p class="text-sm leading-relaxed" style="color:var(--ink)">Increases the effectiveness of certain training events.</p>
-        </div>
-        <div class="glass-orange p-5 info-card">
-          <div class="flex items-center justify-between mb-3">
-            <h4 class="font-display text-lg">Meisho Doto</h4>
-            <span class="chip" style="background:rgba(255,179,71,.4);color:#a55a00">Skill Hint</span>
-          </div>
-          <p class="text-sm mb-2" style="color:var(--ink-soft)">Changes the obtainable Skill Hint:</p>
-          <div class="flex items-center gap-2 text-sm font-bold flex-wrap">
-            <span class="px-2 py-1 rounded-lg" style="background:rgba(255,255,255,.5)">折れない心</span>
-            <i class="fas fa-arrow-right" style="color:var(--flame)"></i>
-            <span class="px-2 py-1 rounded-lg text-white" style="background:linear-gradient(135deg,#ff7e5f,#ffb347)">ネバーギブアップ</span>
-          </div>
-        </div>
-        <div class="glass-green p-5 info-card">
-          <div class="flex items-center justify-between mb-3">
-            <h4 class="font-display text-lg">Nice Nature</h4>
-            <span class="chip" style="background:rgba(136,216,168,.4);color:#2d7a4a">Skill Hint</span>
-          </div>
-          <p class="text-sm mb-2" style="color:var(--ink-soft)">Changes the obtainable Skill Hint:</p>
-          <div class="flex items-center gap-2 text-sm font-bold flex-wrap">
-            <span class="px-2 py-1 rounded-lg" style="background:rgba(255,255,255,.5)">中距離直線○</span>
-            <i class="fas fa-arrow-right" style="color:var(--flame)"></i>
-            <span class="px-2 py-1 rounded-lg text-white" style="background:linear-gradient(135deg,#88d8a8,#7ed8d8)">光芒一閃</span>
-          </div>
-        </div>
-        <div class="glass-cyan p-5 info-card">
-          <div class="flex items-center justify-between mb-3">
-            <h4 class="font-display text-lg">Narita Top Road</h4>
-            <span class="chip" style="background:rgba(126,216,216,.4);color:#1a6e6e">Skill Hint</span>
-          </div>
-          <p class="text-sm mb-2" style="color:var(--ink-soft)">Changes the obtainable Skill Hint:</p>
-          <div class="flex items-center gap-2 text-sm font-bold flex-wrap">
-            <span class="px-2 py-1 rounded-lg" style="background:rgba(255,255,255,.5)">長距離直線○</span>
-            <i class="fas fa-arrow-right" style="color:var(--flame)"></i>
-            <span class="px-2 py-1 rounded-lg text-white" style="background:linear-gradient(135deg,#7ed8d8,#88d8a8)">烈風一閃</span>
-          </div>
-        </div>
-        <div class="glass-orange p-5 info-card">
-          <div class="flex items-center justify-between mb-3">
-            <h4 class="font-display text-lg">Calstone Light O</h4>
-            <span class="chip" style="background:rgba(255,179,71,.4);color:#a55a00">Skill Hint</span>
-          </div>
-          <p class="text-sm mb-2" style="color:var(--ink-soft)">Changes the obtainable Skill Hint:</p>
-          <div class="flex items-center gap-2 text-sm font-bold flex-wrap">
-            <span class="px-2 py-1 rounded-lg" style="background:rgba(255,255,255,.5)">弾ける足取り</span>
-            <i class="fas fa-arrow-right" style="color:var(--flame)"></i>
-            <span class="px-2 py-1 rounded-lg text-white" style="background:linear-gradient(135deg,#ffb347,#ff7e5f)">閃く雷光</span>
-          </div>
-        </div>
-        <div class="glass-flame p-5 info-card">
-          <div class="flex items-center justify-between mb-3">
-            <h4 class="font-display text-lg">Tazuna & Light Hello</h4>
-            <span class="chip" style="background:rgba(255,126,95,.4);color:white">Multi-Boost</span>
-          </div>
-          <p class="text-sm mb-3" style="color:var(--ink)">Changes obtainable Skill Hint:</p>
-          <div class="flex items-center gap-2 text-sm font-bold mb-3 flex-wrap">
-            <span class="px-2 py-1 rounded-lg" style="background:rgba(255,255,255,.5)">比類なき</span>
-            <i class="fas fa-arrow-right" style="color:var(--flame)"></i>
-            <span class="px-2 py-1 rounded-lg text-white" style="background:linear-gradient(135deg,#ff7e5f,#ffb6c1)">英俊豪傑</span>
-          </div>
-          <ul class="text-xs space-y-1" style="color:var(--ink)">
-            <li class="arrow-bullet">Increases base Learning Gauge gain</li>
-            <li class="arrow-bullet">Grants Secret Ingredient(s) after Dating</li>
-            <li class="arrow-bullet">Grants Trick(s) after Region Selection</li>
-            <li class="arrow-bullet">Applies multiplier to Learning Gauge during Summer Camp</li>
-          </ul>
-        </div>
+      <div class="reveal visible relative h-[400px] md:h-[500px] lg:h-[600px]">
+        <div id="ramen-3d-container" class="absolute inset-0 pulse-glow rounded-[40px]"></div>
+        <div class="absolute top-8 left-4 glass-pink px-3 py-2 text-xs font-bold floating-label z-10"><i class="fas fa-fire" style="color:#ff7e5f"></i> Hot & Fresh</div>
+        <div class="absolute bottom-12 right-4 glass-cyan px-3 py-2 text-xs font-bold floating-label z-10" style="animation-delay:-2s"><i class="fas fa-utensils"></i> Tasting Party</div>
+        <div class="absolute top-1/2 -right-2 glass-orange px-3 py-2 text-xs font-bold floating-label z-10" style="animation-delay:-1s"><i class="fas fa-star" style="color:#ffb347"></i> 14th Scenario</div>
       </div>
     </div>
 
-    <!-- Stat Caps -->
-    <div id="tab-stats" class="tab-content hidden">
-      <div class="glass p-8 max-w-4xl mx-auto">
-        <h3 class="font-display text-2xl mb-2" style="color:var(--ink)">Stat Caps</h3>
-        <p class="text-sm mb-6" style="color:var(--ink-soft)">Stat Caps cannot be increased above Hard Cap in any way.</p>
-        <div class="space-y-5">
-          <div>
-            <div class="flex justify-between mb-2">
-              <span class="font-bold flex items-center gap-2"><i class="fas fa-bolt" style="color:#ffb347"></i> Speed</span>
-              <span class="text-sm" style="color:var(--ink-soft)">Cap: <b>2150</b> · Hard: <b>2500</b></span>
+    <!-- Marquee -->
+    <div class="py-4 overflow-hidden mb-20">
+      <div class="flex marquee-track whitespace-nowrap gap-8 font-display text-2xl" style="color:var(--ink-soft);opacity:.5">
+        <span>濃厚味噌ラーメン</span><span>·</span><span>すっきり塩ラーメン</span><span>·</span><span>岩のり背脂ラーメン</span><span>·</span><span>あっさり醤油ラーメン</span><span>·</span><span>ガッツリ豚ラーメン</span><span>·</span><span>玉ねぎ醤油ラーメン</span><span>·</span><span>ウマ辛名古屋ラーメン</span><span>·</span><span>背脂ねぎラーメン</span><span>·</span><span>甘口醤油ラーメン</span><span>·</span>
+        <span>濃厚味噌ラーメン</span><span>·</span><span>すっきり塩ラーメン</span><span>·</span><span>岩のり背脂ラーメン</span><span>·</span><span>あっさり醤油ラーメン</span><span>·</span><span>ガッツリ豚ラーメン</span><span>·</span><span>玉ねぎ醤油ラーメン</span><span>·</span><span>ウマ辛名古屋ラーメン</span><span>·</span><span>背脂ねぎラーメン</span><span>·</span><span>甘口醤油ラーメン</span><span>·</span>
+      </div>
+    </div>
+
+    <!-- STORY & RULES SECTION -->
+    <div id="rules-section" class="max-w-7xl mx-auto">
+      <div class="text-center mb-12">
+        <div class="chip mb-4" style="background:rgba(255,182,193,.3);color:var(--flame)"><i class="fas fa-book"></i> Story & Rules</div>
+        <h2 class="text-4xl md:text-5xl font-display mb-4" style="color:var(--ink)">A Bowl of <span class="flame-text">Gratitude</span></h2>
+        <p class="text-lg max-w-2xl mx-auto" style="color:var(--ink-soft)">A nationwide ramen event, fueled by thankfulness and trained to perfection.</p>
+      </div>
+      
+      <div class="grid md:grid-cols-2 gap-6 mb-12">
+        <div class="glass p-8">
+          <div class="flex items-start gap-4 mb-4">
+            <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-white" style="background:linear-gradient(135deg,#ffb6c1,#ffb347)"><i class="fas fa-heart text-xl"></i></div>
+            <div><h3 class="font-display text-xl mb-1" style="color:var(--ink)">The Story</h3><div class="text-xs font-bold" style="color:var(--ink-soft)">WHY RAMEN?</div></div>
+          </div>
+          <p class="leading-relaxed" style="color:var(--ink)">Wanting to repay their fans with ramen, Umamusumes decided to hold a nationwide ramen event. With support from Tazuna Hayakawa and Light Hello, Tracen-ken now opens its doors!</p>
+        </div>
+        <div class="glass p-8">
+          <div class="flex items-start gap-4 mb-4">
+            <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-white" style="background:linear-gradient(135deg,#88d8a8,#7ed8d8)"><i class="fas fa-bullseye text-xl"></i></div>
+            <div><h3 class="font-display text-xl mb-1" style="color:var(--ink)">Training Goal</h3><div class="text-xs font-bold" style="color:var(--ink-soft)">YOUR OBJECTIVE</div></div>
+          </div>
+          <p class="leading-relaxed mb-3" style="color:var(--ink)">Your goal is participating in the Twinkle Series, as well as training your ramen skills to lead the nationwide ramen event to success.</p>
+          <p class="text-sm" style="color:var(--ink-soft)"><i class="fas fa-calendar-day mr-2" style="color:var(--flame)"></i>At the end of the year, the Ramen Jamboree is held to check your progress.</p>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap gap-2 justify-center mb-8">
+        <button class="tab-btn active" data-tab="characters"><i class="fas fa-user-friends mr-1"></i>Character Effects</button>
+        <button class="tab-btn" data-tab="stats"><i class="fas fa-chart-bar mr-1"></i>Stat Caps</button>
+        <button class="tab-btn" data-tab="evolution"><i class="fas fa-sync-alt mr-1"></i>Skill Evolution</button>
+        <button class="tab-btn" data-tab="scenario-skill"><i class="fas fa-star mr-1"></i>Scenario Skills</button>
+      </div>
+
+      <div id="tab-characters" class="tab-content">
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div class="glass-pink p-5 info-card">
+            <div class="flex items-center justify-between mb-3"><h4 class="font-display text-lg">Fine Motion</h4><span class="chip" style="background:rgba(255,182,193,.4);color:#c0345e">Training</span></div>
+            <p class="text-sm leading-relaxed" style="color:var(--ink)">Increases the effectiveness of certain training events.</p>
+          </div>
+          <div class="glass-orange p-5 info-card">
+            <div class="flex items-center justify-between mb-3"><h4 class="font-display text-lg">Meisho Doto</h4><span class="chip" style="background:rgba(255,179,71,.4);color:#a55a00">Skill Hint</span></div>
+            <p class="text-sm mb-2" style="color:var(--ink-soft)">Changes the obtainable Skill Hint:</p>
+            <div class="flex items-center gap-2 text-sm font-bold flex-wrap">
+              <span class="px-2 py-1 rounded-lg" style="background:rgba(255,255,255,.5)">折れない心</span>
+              <i class="fas fa-arrow-right" style="color:var(--flame)"></i>
+              <span class="px-2 py-1 rounded-lg text-white" style="background:linear-gradient(135deg,#ff7e5f,#ffb347)">ネバーギブアップ</span>
             </div>
-            <div class="stat-bar"><div class="stat-fill" style="width:86%;background:linear-gradient(90deg,#ffb347,#ff7e5f)"></div></div>
-            <div class="text-xs mt-1" style="color:var(--ink-soft)">Limit Break: +950</div>
           </div>
-          <div>
-            <div class="flex justify-between mb-2">
-              <span class="font-bold flex items-center gap-2"><i class="fas fa-heart-pulse" style="color:#ff7e5f"></i> Stamina</span>
-              <span class="text-sm" style="color:var(--ink-soft)">Cap: <b>1800</b> · Hard: <b>2500</b></span>
+          <div class="glass-green p-5 info-card">
+            <div class="flex items-center justify-between mb-3"><h4 class="font-display text-lg">Nice Nature</h4><span class="chip" style="background:rgba(136,216,168,.4);color:#2d7a4a">Skill Hint</span></div>
+            <p class="text-sm mb-2" style="color:var(--ink-soft)">Changes the obtainable Skill Hint:</p>
+            <div class="flex items-center gap-2 text-sm font-bold flex-wrap">
+              <span class="px-2 py-1 rounded-lg" style="background:rgba(255,255,255,.5)">中距離直線○</span>
+              <i class="fas fa-arrow-right" style="color:var(--flame)"></i>
+              <span class="px-2 py-1 rounded-lg text-white" style="background:linear-gradient(135deg,#88d8a8,#7ed8d8)">光芒一閃</span>
             </div>
-            <div class="stat-bar"><div class="stat-fill" style="width:72%;background:linear-gradient(90deg,#ff7e5f,#ffb6c1)"></div></div>
-            <div class="text-xs mt-1" style="color:var(--ink-soft)">Limit Break: +600</div>
           </div>
-          <div>
-            <div class="flex justify-between mb-2">
-              <span class="font-bold flex items-center gap-2"><i class="fas fa-fist-raised" style="color:#ff6b9d"></i> Power</span>
-              <span class="text-sm" style="color:var(--ink-soft)">Cap: <b>1700</b> · Hard: <b>2500</b></span>
+          <div class="glass-cyan p-5 info-card">
+            <div class="flex items-center justify-between mb-3"><h4 class="font-display text-lg">Narita Top Road</h4><span class="chip" style="background:rgba(126,216,216,.4);color:#1a6e6e">Skill Hint</span></div>
+            <p class="text-sm mb-2" style="color:var(--ink-soft)">Changes the obtainable Skill Hint:</p>
+            <div class="flex items-center gap-2 text-sm font-bold flex-wrap">
+              <span class="px-2 py-1 rounded-lg" style="background:rgba(255,255,255,.5)">長距離直線○</span>
+              <i class="fas fa-arrow-right" style="color:var(--flame)"></i>
+              <span class="px-2 py-1 rounded-lg text-white" style="background:linear-gradient(135deg,#7ed8d8,#88d8a8)">烈風一閃</span>
             </div>
-            <div class="stat-bar"><div class="stat-fill" style="width:68%;background:linear-gradient(90deg,#ffb6c1,#ff7e5f)"></div></div>
-            <div class="text-xs mt-1" style="color:var(--ink-soft)">Limit Break: +500</div>
           </div>
-          <div>
-            <div class="flex justify-between mb-2">
-              <span class="font-bold flex items-center gap-2"><i class="fas fa-fire" style="color:#88d8a8"></i> Guts</span>
-              <span class="text-sm" style="color:var(--ink-soft)">Cap: <b>1700</b> · Hard: <b>2500</b></span>
+          <div class="glass-orange p-5 info-card">
+            <div class="flex items-center justify-between mb-3"><h4 class="font-display text-lg">Calstone Light O</h4><span class="chip" style="background:rgba(255,179,71,.4);color:#a55a00">Skill Hint</span></div>
+            <p class="text-sm mb-2" style="color:var(--ink-soft)">Changes the obtainable Skill Hint:</p>
+            <div class="flex items-center gap-2 text-sm font-bold flex-wrap">
+              <span class="px-2 py-1 rounded-lg" style="background:rgba(255,255,255,.5)">弾ける足取り</span>
+              <i class="fas fa-arrow-right" style="color:var(--flame)"></i>
+              <span class="px-2 py-1 rounded-lg text-white" style="background:linear-gradient(135deg,#ffb347,#ff7e5f)">閃く雷光</span>
             </div>
-            <div class="stat-bar"><div class="stat-fill" style="width:68%;background:linear-gradient(90deg,#88d8a8,#7ed8d8)"></div></div>
-            <div class="text-xs mt-1" style="color:var(--ink-soft)">Limit Break: +500</div>
           </div>
-          <div>
-            <div class="flex justify-between mb-2">
-              <span class="font-bold flex items-center gap-2"><i class="fas fa-brain" style="color:#7ed8d8"></i> Wisdom</span>
-              <span class="text-sm" style="color:var(--ink-soft)">Cap: <b>1800</b> · Hard: <b>2500</b></span>
+          <div class="glass-flame p-5 info-card">
+            <div class="flex items-center justify-between mb-3"><h4 class="font-display text-lg">Tazuna & Light Hello</h4><span class="chip" style="background:rgba(255,126,95,.4);color:white">Multi-Boost</span></div>
+            <p class="text-sm mb-3" style="color:var(--ink)">Changes obtainable Skill Hint:</p>
+            <div class="flex items-center gap-2 text-sm font-bold mb-3 flex-wrap">
+              <span class="px-2 py-1 rounded-lg" style="background:rgba(255,255,255,.5)">比類なき</span>
+              <i class="fas fa-arrow-right" style="color:var(--flame)"></i>
+              <span class="px-2 py-1 rounded-lg text-white" style="background:linear-gradient(135deg,#ff7e5f,#ffb6c1)">英俊豪傑</span>
             </div>
-            <div class="stat-bar"><div class="stat-fill" style="width:72%;background:linear-gradient(90deg,#7ed8d8,#88d8a8)"></div></div>
-            <div class="text-xs mt-1" style="color:var(--ink-soft)">Limit Break: +600</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Skill Evolution -->
-    <div id="tab-evolution" class="tab-content hidden">
-      <p class="text-center text-sm mb-6" style="color:var(--ink-soft)">In this scenario, you can evolve up to <b style="color:var(--flame)">2 skills</b> into the scenario evolved skill.</p>
-      <div class="grid md:grid-cols-2 gap-5" id="evolution-grid"></div>
-    </div>
-
-    <!-- Scenario Skills -->
-    <div id="tab-scenario-skill" class="tab-content hidden">
-      <div class="grid md:grid-cols-2 gap-5">
-        <div class="glass-flame p-6 skill-card">
-          <div class="flex items-center justify-between mb-3">
-            <h4 class="font-display text-xl" style="color:var(--ink)">恩返し、召し上がれ</h4>
-            <span class="chip" style="background:rgba(255,126,95,.4);color:white">Base</span>
-          </div>
-          <p class="text-sm leading-relaxed" style="color:var(--ink)">Increase speed by <b>0.15</b> (2.4s) if you are in last spurt in the first half of the very final leg.</p>
-        </div>
-        <div class="glass-flame p-6 skill-card" style="background:linear-gradient(135deg,rgba(255,126,95,.5),rgba(255,179,71,.3),rgba(255,255,255,.5))">
-          <div class="flex items-center justify-between mb-3">
-            <h4 class="font-display text-xl" style="color:var(--ink)">極上の感謝を！</h4>
-            <span class="chip" style="background:linear-gradient(135deg,#ff7e5f,#ffb347);color:white">Enhanced</span>
-          </div>
-          <p class="text-sm leading-relaxed mb-2" style="color:var(--ink)">Increase speed by <b>0.35</b> (2.4s) under the same condition.</p>
-          <p class="text-xs" style="color:var(--ink-soft)"><i class="fas fa-fire mr-1" style="color:var(--flame)"></i>The effect becomes stronger the higher the total Excitement Pt you've acquired.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- REGIONS -->
-<section id="regions" class="relative z-10 py-20 px-6">
-  <div class="max-w-7xl mx-auto">
-    <div class="text-center mb-12 reveal">
-      <div class="chip mb-4" style="background:rgba(126,216,216,.3);color:var(--flame)">
-        <i class="fas fa-map-marked-alt"></i> Region Selection
-      </div>
-      <h2 class="text-4xl md:text-5xl font-display mb-4" style="color:var(--ink)">10 Regions, <span class="flame-text">10 Bowls</span></h2>
-      <p class="text-lg max-w-2xl mx-auto" style="color:var(--ink-soft)">Choose 3 regions each year. Each offers a unique ramen recipe with buffs for your training.</p>
-    </div>
-    <div class="flex flex-wrap gap-2 justify-center mb-8 reveal">
-      <button class="year-pill active" data-year="all">All Years</button>
-      <button class="year-pill" data-year="junior"><i class="fas fa-seedling mr-1"></i>Junior</button>
-      <button class="year-pill" data-year="classic"><i class="fas fa-leaf mr-1"></i>Classic</button>
-      <button class="year-pill" data-year="senior"><i class="fas fa-tree mr-1"></i>Senior</button>
-    </div>
-    <div id="region-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
-    <div class="mt-8 glass p-5 reveal text-center">
-      <p class="text-sm" style="color:var(--ink-soft)"><i class="fas fa-info-circle mr-2" style="color:var(--flame)"></i>First Region Selection at <b>Turn #3</b>. Reselect after each Ramen Jamboree (excluding 3rd RMJ). Junior: 5 regions. Classic: 5 regions. Senior: all 10 regions.</p>
-    </div>
-  </div>
-</section>
-
-<!-- STRATEGY GUIDE -->
-<section id="guide" class="relative z-10 py-20 px-6">
-  <div class="max-w-5xl mx-auto">
-    <div class="text-center mb-12 reveal">
-      <div class="chip mb-4" style="background:rgba(136,216,168,.3);color:var(--flame)">
-        <i class="fas fa-route"></i> Strategy Guide
-      </div>
-      <h2 class="text-4xl md:text-5xl font-display mb-4" style="color:var(--ink)">Step-by-Step <span class="flame-text">Progression</span></h2>
-      <p class="text-lg max-w-2xl mx-auto" style="color:var(--ink-soft)">A logical progression path through the 3 years of training, maximizing buffs and hitting Ramen Jamboree quotas.</p>
-    </div>
-    
-    <div class="relative reveal">
-      <div class="timeline-line hidden md:block"></div>
-      <div id="timeline-container"></div>
-    </div>
-  </div>
-</section>
-
-<!-- MECHANICS -->
-<section id="mechanics" class="relative z-10 py-20 px-6">
-  <div class="max-w-7xl mx-auto">
-    <div class="text-center mb-12 reveal">
-      <div class="chip mb-4" style="background:rgba(255,179,71,.3);color:var(--flame)">
-        <i class="fas fa-cogs"></i> Mechanics
-      </div>
-      <h2 class="text-4xl md:text-5xl font-display mb-4" style="color:var(--ink)">Cooking Up <span class="flame-text">Success</span></h2>
-      <p class="text-lg max-w-2xl mx-auto" style="color:var(--ink-soft)">From Learning Gauge to Ramen Jamboree — the systems that power your ramen journey.</p>
-    </div>
-
-    <div class="flex flex-wrap gap-2 justify-center mb-8 reveal">
-      <button class="tab-btn active" data-mech="link"><i class="fas fa-link mr-1"></i>Scenario Link</button>
-      <button class="tab-btn" data-mech="gauge"><i class="fas fa-tachometer-alt mr-1"></i>Learning Gauge</button>
-      <button class="tab-btn" data-mech="party"><i class="fas fa-utensils mr-1"></i>Tasting Party</button>
-      <button class="tab-btn" data-mech="rmj"><i class="fas fa-trophy mr-1"></i>Ramen Jamboree</button>
-    </div>
-
-    <!-- Scenario Link -->
-    <div id="mech-link" class="mech-content reveal">
-      <div class="glass p-8">
-        <h3 class="font-display text-2xl mb-3" style="color:var(--ink)"><i class="fas fa-link mr-2" style="color:var(--flame)"></i>Scenario Linked Friend Support Cards</h3>
-        <p class="text-sm mb-6" style="color:var(--ink-soft)">Scenario Linked Friend Support Cards benefit your training in various ways just by slotting in your deck. Only the highest bonuses available will be applied.</p>
-        <div class="overflow-x-auto">
-          <table class="glass-table w-full">
-            <thead>
-              <tr>
-                <th>Support Card</th>
-                <th>Base Learning Gauge</th>
-                <th>Tricks (Region Sel.)</th>
-                <th>Secret Ingredients (Dating)</th>
-                <th>Summer Camp</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><b>SSR [一杯のノスタルジア]</b><br><span class="text-xs" style="color:var(--ink-soft)">Tazuna Hayakawa</span></td>
-                <td><span class="chip" style="background:rgba(255,126,95,.3);color:#a13a1a">+10 / training</span></td>
-                <td><b>+2 Tricks</b></td>
-                <td><b>+2 Secret</b></td>
-                <td><b>Max out</b> every turn</td>
-              </tr>
-              <tr>
-                <td>Any other Scenario Linked<br><span class="text-xs" style="color:var(--ink-soft)">Friend Support Card</span></td>
-                <td><span class="chip" style="background:rgba(255,179,71,.3);color:#a55a00">+5 / training</span></td>
-                <td>+1 Trick</td>
-                <td>+1 Secret</td>
-                <td><b>Double</b> gauge gain</td>
-              </tr>
-              <tr>
-                <td>No Scenario Linked<br><span class="text-xs" style="color:var(--ink-soft)">Friend Support Card</span></td>
-                <td><span class="chip" style="background:rgba(255,255,255,.5);color:var(--ink-soft)">+3 / training</span></td>
-                <td>—</td>
-                <td>—</td>
-                <td>—</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- Learning Gauge -->
-    <div id="mech-gauge" class="mech-content hidden">
-      <div class="grid md:grid-cols-3 gap-5 mb-6">
-        <div class="glass-orange p-6 text-center">
-          <div class="ingredient-icon mx-auto mb-3" style="background:linear-gradient(135deg,#ffb347,#ff7e5f);width:48px;height:48px;font-size:22px"><i class="fas fa-bowl-rice"></i></div>
-          <h4 class="font-display text-lg mb-1">Noodle</h4>
-          <p class="text-xs" style="color:var(--ink-soft)">One of three ingredient types</p>
-        </div>
-        <div class="glass-pink p-6 text-center">
-          <div class="ingredient-icon mx-auto mb-3" style="background:linear-gradient(135deg,#ffb6c1,#ff7e5f);width:48px;height:48px;font-size:22px"><i class="fas fa-mug-hot"></i></div>
-          <h4 class="font-display text-lg mb-1">Soup</h4>
-          <p class="text-xs" style="color:var(--ink-soft)">One of three ingredient types</p>
-        </div>
-        <div class="glass-green p-6 text-center">
-          <div class="ingredient-icon mx-auto mb-3" style="background:linear-gradient(135deg,#88d8a8,#7ed8d8);width:48px;height:48px;font-size:22px"><i class="fas fa-pepper-hot"></i></div>
-          <h4 class="font-display text-lg mb-1">Topping</h4>
-          <p class="text-xs" style="color:var(--ink-soft)">One of three ingredient types</p>
-        </div>
-      </div>
-      <div class="glass p-8">
-        <h3 class="font-display text-2xl mb-3" style="color:var(--ink)"><i class="fas fa-tachometer-alt mr-2" style="color:var(--flame)"></i>How It Works</h3>
-        <div class="grid md:grid-cols-2 gap-6">
-          <div>
-            <p class="text-sm leading-relaxed mb-3" style="color:var(--ink)">Learning Gauges increase every turn (except training failed / skipped by lazy habit) by the amount of base Learning Gauge gain.</p>
-            <p class="text-sm leading-relaxed mb-3" style="color:var(--ink)">Each training facility has a <b>random bubble</b> of an ingredient assigned every turn, boosting that ingredient's gain. Regions also boost one ingredient's gauge gain.</p>
-            <p class="text-sm leading-relaxed" style="color:var(--ink)">Non-support card characters, Friend / Group Support Cards in training, and Friendship Training all boost Learning Gauge gain.</p>
-          </div>
-          <div>
-            <div class="glass-orange p-5 mb-4">
-              <div class="text-xs font-bold mb-2" style="color:var(--ink-soft)">EXAMPLE GAUGE (7 = 1 Trick)</div>
-              <div class="flex gap-1 h-8" id="gauge-demo">
-                <div class="gauge-segment filled" style="background:#ffb347;color:#ffb347"></div>
-                <div class="gauge-segment filled" style="background:#ffb347;color:#ffb347"></div>
-                <div class="gauge-segment filled" style="background:#ffb347;color:#ffb347"></div>
-                <div class="gauge-segment filled" style="background:#ffb347;color:#ffb347"></div>
-                <div class="gauge-segment filled" style="background:#ffb347;color:#ffb347"></div>
-                <div class="gauge-segment" style="background:rgba(255,179,71,.2)"></div>
-                <div class="gauge-segment" style="background:rgba(255,179,71,.2)"></div>
-              </div>
-              <div class="text-xs mt-2" style="color:var(--ink-soft)">5 / 7 — train more to earn a Trick!</div>
-            </div>
-            <ul class="text-sm space-y-2" style="color:var(--ink)">
-              <li class="arrow-bullet">7 gauge = 1 Trick of that ingredient type</li>
-              <li class="arrow-bullet">Gauge resets after hitting 7 (no overlap)</li>
-              <li class="arrow-bullet">Hold max <b>10 Tricks</b> at once</li>
-              <li class="arrow-bullet">Overflow discards the oldest Trick</li>
-              <li class="arrow-bullet">Tricks discarded after each RMJ</li>
+            <ul class="text-xs space-y-1" style="color:var(--ink)">
+              <li class="arrow-bullet">Increases base Learning Gauge gain</li>
+              <li class="arrow-bullet">Grants Secret Ingredient(s) after Dating</li>
+              <li class="arrow-bullet">Grants Trick(s) after Region Selection</li>
+              <li class="arrow-bullet">Applies multiplier to Learning Gauge during Summer Camp</li>
             </ul>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Tasting Party -->
-    <div id="mech-party" class="mech-content hidden">
-      <div class="grid md:grid-cols-2 gap-6">
-        <div class="glass p-8">
-          <h3 class="font-display text-2xl mb-3" style="color:var(--ink)"><i class="fas fa-utensils mr-2" style="color:var(--flame)"></i>Tasting Party</h3>
-          <p class="text-sm leading-relaxed mb-4" style="color:var(--ink)">Activate via the button on the left side of the training screen. Use Tricks to cook ramen and receive Region Effects of the chosen recipe.</p>
-          <ul class="text-sm space-y-2" style="color:var(--ink)">
-            <li class="arrow-bullet">Each recipe requires different Tricks</li>
-            <li class="arrow-bullet">Secret Ingredients substitute any Trick</li>
-            <li class="arrow-bullet">Up to <b>2 Secret Ingredients</b> per Tasting Party</li>
-            <li class="arrow-bullet">Hold max <b>4 Secret Ingredients</b> at once</li>
-            <li class="arrow-bullet">NOT discarded after RMJ (unlike Tricks)</li>
-          </ul>
-        </div>
-        <div class="glass p-8">
-          <h3 class="font-display text-xl mb-4" style="color:var(--ink)">Secret Ingredient Sources</h3>
-          <div class="space-y-3">
-            <div class="flex items-center gap-3 p-3 rounded-xl" style="background:rgba(255,179,71,.2)">
-              <div class="ingredient-icon" style="background:linear-gradient(135deg,#ffb347,#ff7e5f)">R</div>
-              <div><b class="text-sm">Region Selection</b><div class="text-xs" style="color:var(--ink-soft)">2 per event</div></div>
-            </div>
-            <div class="flex items-center gap-3 p-3 rounded-xl" style="background:rgba(136,216,168,.2)">
-              <div class="ingredient-icon" style="background:linear-gradient(135deg,#88d8a8,#7ed8d8)">S</div>
-              <div><b class="text-sm">Summer Camp</b><div class="text-xs" style="color:var(--ink-soft)">2 early July, 1 late July, 1 early Aug, 1 late Aug</div></div>
-            </div>
-            <div class="flex items-center gap-3 p-3 rounded-xl" style="background:rgba(255,182,193,.2)">
-              <div class="ingredient-icon" style="background:linear-gradient(135deg,#ffb6c1,#ff7e5f)">D</div>
-              <div><b class="text-sm">Dating (Scenario Linked Friend)</b><div class="text-xs" style="color:var(--ink-soft)">2 with SSR Tazuna, 1 with others</div></div>
-            </div>
+      <div id="tab-stats" class="tab-content hidden">
+        <div class="glass p-8 max-w-4xl mx-auto">
+          <h3 class="font-display text-2xl mb-2" style="color:var(--ink)">Stat Caps</h3>
+          <p class="text-sm mb-6" style="color:var(--ink-soft)">Stat Caps cannot be increased above Hard Cap in any way.</p>
+          <div class="space-y-5">
+            <div><div class="flex justify-between mb-2"><span class="font-bold flex items-center gap-2"><i class="fas fa-bolt" style="color:#ffb347"></i> Speed</span><span class="text-sm" style="color:var(--ink-soft)">Cap: <b>2150</b> · Hard: <b>2500</b></span></div><div class="stat-bar"><div class="stat-fill" style="width:86%;background:linear-gradient(90deg,#ffb347,#ff7e5f)"></div></div><div class="text-xs mt-1" style="color:var(--ink-soft)">Limit Break: +950</div></div>
+            <div><div class="flex justify-between mb-2"><span class="font-bold flex items-center gap-2"><i class="fas fa-heart-pulse" style="color:#ff7e5f"></i> Stamina</span><span class="text-sm" style="color:var(--ink-soft)">Cap: <b>1800</b> · Hard: <b>2500</b></span></div><div class="stat-bar"><div class="stat-fill" style="width:72%;background:linear-gradient(90deg,#ff7e5f,#ffb6c1)"></div></div><div class="text-xs mt-1" style="color:var(--ink-soft)">Limit Break: +600</div></div>
+            <div><div class="flex justify-between mb-2"><span class="font-bold flex items-center gap-2"><i class="fas fa-fist-raised" style="color:#ff6b9d"></i> Power</span><span class="text-sm" style="color:var(--ink-soft)">Cap: <b>1700</b> · Hard: <b>2500</b></span></div><div class="stat-bar"><div class="stat-fill" style="width:68%;background:linear-gradient(90deg,#ffb6c1,#ff7e5f)"></div></div><div class="text-xs mt-1" style="color:var(--ink-soft)">Limit Break: +500</div></div>
+            <div><div class="flex justify-between mb-2"><span class="font-bold flex items-center gap-2"><i class="fas fa-fire" style="color:#88d8a8"></i> Guts</span><span class="text-sm" style="color:var(--ink-soft)">Cap: <b>1700</b> · Hard: <b>2500</b></span></div><div class="stat-bar"><div class="stat-fill" style="width:68%;background:linear-gradient(90deg,#88d8a8,#7ed8d8)"></div></div><div class="text-xs mt-1" style="color:var(--ink-soft)">Limit Break: +500</div></div>
+            <div><div class="flex justify-between mb-2"><span class="font-bold flex items-center gap-2"><i class="fas fa-brain" style="color:#7ed8d8"></i> Wisdom</span><span class="text-sm" style="color:var(--ink-soft)">Cap: <b>1800</b> · Hard: <b>2500</b></span></div><div class="stat-bar"><div class="stat-fill" style="width:72%;background:linear-gradient(90deg,#7ed8d8,#88d8a8)"></div></div><div class="text-xs mt-1" style="color:var(--ink-soft)">Limit Break: +600</div></div>
           </div>
         </div>
       </div>
-      <div class="glass p-8 mt-6">
-        <h3 class="font-display text-2xl mb-4" style="color:var(--ink)"><i class="fas fa-magic mr-2" style="color:var(--flame)"></i>Base Tasting Party Effects</h3>
-        <p class="text-sm mb-5" style="color:var(--ink-soft)">Activating Tasting Party grants buffs, upgrades Region Effects, and grants Excitement Pts. Only 3 bonuses at first — more unlock as the run progresses.</p>
-        <div class="overflow-x-auto">
-          <table class="glass-table w-full">
-            <thead>
-              <tr><th>Bonus</th><th>Junior</th><th>Classic</th><th>Senior</th></tr>
-            </thead>
-            <tbody>
-              <tr><td><b>Training Bonus</b></td><td>15%</td><td>15%</td><td>15%</td></tr>
-              <tr><td><b>Failure Rate Down</b></td><td>30%</td><td>50%</td><td>100%</td></tr>
-              <tr><td><b>Friendship Bonus</b></td><td>—</td><td>30%</td><td>45%</td></tr>
-              <tr><td><b>Bond Gauge</b></td><td>+10</td><td>—</td><td>—</td></tr>
-              <tr><td><b>Base Stats Limit Break</b></td><td>—</td><td>+20</td><td>+40</td></tr>
-              <tr><td><b>Skill Pt Limit Break</b></td><td>—</td><td>+20</td><td>+40</td></tr>
-              <tr><td><b>Hint Events</b></td><td>Selected training only</td><td>All available Hint Events</td><td>All Support Cards activate Hint Event</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
 
-    <!-- Ramen Jamboree -->
-    <div id="mech-rmj" class="mech-content hidden">
-      <div class="glass p-8 mb-6">
-        <h3 class="font-display text-2xl mb-3" style="color:var(--ink)"><i class="fas fa-trophy mr-2" style="color:var(--flame)"></i>Ramen Jamboree (RMJ)</h3>
-        <p class="text-sm leading-relaxed mb-4" style="color:var(--ink)">End-of-year event. Excitement Pts from Tasting Party affect the result. Better results = stronger passive bonuses (stack additively).</p>
-        <div class="grid md:grid-cols-3 gap-4 mb-6">
-          <div class="glass-pink p-5 text-center">
-            <div class="text-xs font-bold mb-1" style="color:var(--ink-soft)">1st RMJ</div>
-            <div class="font-display text-lg" style="color:var(--ink)">End of Junior</div>
-            <div class="text-xs mt-1" style="color:var(--ink-soft)">盛況 / 大盛況</div>
-          </div>
-          <div class="glass-orange p-5 text-center">
-            <div class="text-xs font-bold mb-1" style="color:var(--ink-soft)">2nd RMJ</div>
-            <div class="font-display text-lg" style="color:var(--ink)">End of Classic</div>
-            <div class="text-xs mt-1" style="color:var(--ink-soft)">盛況 / 大盛況</div>
-          </div>
-          <div class="glass-flame p-5 text-center">
-            <div class="text-xs font-bold mb-1" style="color:var(--ink-soft)">3rd RMJ</div>
-            <div class="font-display text-lg" style="color:var(--ink)">Super RMJ EX</div>
-            <div class="text-xs mt-1" style="color:var(--ink-soft)">盛況 / 大盛況 / 超盛況</div>
-          </div>
-        </div>
-        <div class="overflow-x-auto">
-          <table class="glass-table w-full">
-            <thead>
-              <tr>
-                <th>Evaluation</th>
-                <th>1st RMJ</th>
-                <th>1st RMJ</th>
-                <th>2nd RMJ</th>
-                <th>2nd RMJ</th>
-                <th>3rd RMJ</th>
-                <th>3rd RMJ</th>
-                <th>3rd RMJ</th>
-              </tr>
-              <tr>
-                <th></th>
-                <th>盛況</th><th>大盛況</th>
-                <th>盛況</th><th>大盛況</th>
-                <th>盛況</th><th>大盛況</th><th>超盛況</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td><b>Quota</b></td><td>—</td><td>1500</td><td>—</td><td>3000</td><td>—</td><td>3500</td><td>5000</td></tr>
-              <tr><td><b>Friendship Bonus</b></td><td>+3%</td><td>+5%</td><td>+5%</td><td>+10%</td><td>+15%</td><td>+25%</td><td>—</td></tr>
-              <tr><td><b>Speciality Rate Up</b></td><td>+30</td><td>+80</td><td>+60</td><td>+120</td><td>+150</td><td>+250</td><td>—</td></tr>
-              <tr><td><b>Hint Rate Up</b></td><td>+15%</td><td>+30%</td><td>+30%</td><td>+75%</td><td>+75%</td><td>+125%</td><td>—</td></tr>
-            </tbody>
-          </table>
-        </div>
+      <div id="tab-evolution" class="tab-content hidden">
+        <p class="text-center text-sm mb-6" style="color:var(--ink-soft)">In this scenario, you can evolve up to <b style="color:var(--flame)">2 skills</b> into the scenario evolved skill.</p>
+        <div class="grid md:grid-cols-2 gap-5" id="evolution-grid"></div>
       </div>
-      <div class="grid md:grid-cols-2 gap-5">
-        <div class="glass-green p-6">
-          <h4 class="font-display text-lg mb-3" style="color:var(--ink)"><i class="fas fa-bolt mr-2" style="color:#88d8a8"></i>From Excitement Pt</h4>
-          <ul class="text-sm space-y-2" style="color:var(--ink)">
-            <li class="arrow-bullet">Training Bonus</li>
-            <li class="arrow-bullet">Friendship Bonus</li>
-            <li class="arrow-bullet">Speciality Rate Up</li>
-            <li class="arrow-bullet">Hint Rate Up</li>
-          </ul>
-        </div>
-        <div class="glass-pink p-6">
-          <h4 class="font-display text-lg mb-3" style="color:var(--ink)"><i class="fas fa-trash-alt mr-2" style="color:#ffb6c1"></i>Trick Disposal</h4>
-          <p class="text-sm leading-relaxed" style="color:var(--ink)">Ramen Jamboree discards all currently owned Tricks. They are used up to increase Energy recovery from the event (formula unknown).</p>
+
+      <div id="tab-scenario-skill" class="tab-content hidden">
+        <div class="grid md:grid-cols-2 gap-5">
+          <div class="glass-flame p-6 skill-card">
+            <div class="flex items-center justify-between mb-3"><h4 class="font-display text-xl" style="color:var(--ink)">恩返し、召し上がれ</h4><span class="chip" style="background:rgba(255,126,95,.4);color:white">Base</span></div>
+            <p class="text-sm leading-relaxed" style="color:var(--ink)">Increase speed by <b>0.15</b> (2.4s) if you are in last spurt in the first half of the very final leg.</p>
+          </div>
+          <div class="glass-flame p-6 skill-card" style="background:linear-gradient(135deg,rgba(255,126,95,.5),rgba(255,179,71,.3),rgba(255,255,255,.5))">
+            <div class="flex items-center justify-between mb-3"><h4 class="font-display text-xl" style="color:var(--ink)">極上の感謝を！</h4><span class="chip" style="background:linear-gradient(135deg,#ff7e5f,#ffb347);color:white">Enhanced</span></div>
+            <p class="text-sm leading-relaxed mb-2" style="color:var(--ink)">Increase speed by <b>0.35</b> (2.4s) under the same condition.</p>
+            <p class="text-xs" style="color:var(--ink-soft)"><i class="fas fa-fire mr-1" style="color:var(--flame)"></i>The effect becomes stronger the higher the total Excitement Pt you've acquired.</p>
+          </div>
         </div>
       </div>
     </div>
+  </section>
+
+  <!-- PAGE 2: REGIONS -->
+  <section id="page-regions" class="page">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-12">
+        <div class="chip mb-4" style="background:rgba(126,216,216,.3);color:var(--flame)"><i class="fas fa-map-marked-alt"></i> Region Selection</div>
+        <h2 class="text-4xl md:text-5xl font-display mb-4" style="color:var(--ink)">10 Regions, <span class="flame-text">10 Bowls</span></h2>
+        <p class="text-lg max-w-2xl mx-auto" style="color:var(--ink-soft)">Choose 3 regions each year. Each offers a unique ramen recipe with buffs for your training.</p>
+      </div>
+      <div class="flex flex-wrap gap-2 justify-center mb-8">
+        <button class="year-pill active" data-year="all">All Years</button>
+        <button class="year-pill" data-year="junior"><i class="fas fa-seedling mr-1"></i>Junior</button>
+        <button class="year-pill" data-year="classic"><i class="fas fa-leaf mr-1"></i>Classic</button>
+        <button class="year-pill" data-year="senior"><i class="fas fa-tree mr-1"></i>Senior</button>
+      </div>
+      <div id="region-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+      <div class="mt-8 glass p-5 text-center">
+        <p class="text-sm" style="color:var(--ink-soft)"><i class="fas fa-info-circle mr-2" style="color:var(--flame)"></i>First Region Selection at <b>Turn #3</b>. Reselect after each Ramen Jamboree (excluding 3rd RMJ). Junior: 5 regions. Classic: 5 regions. Senior: all 10 regions.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGE 3: DEEP DIVE (Guide, Mechanics, Ultimate) -->
+  <section id="page-deep" class="page">
+    <div class="max-w-7xl mx-auto">
+      
+      <!-- Strategy Guide -->
+      <div id="guide" class="mb-24">
+        <div class="text-center mb-12">
+          <div class="chip mb-4" style="background:rgba(136,216,168,.3);color:var(--flame)"><i class="fas fa-route"></i> Strategy Guide</div>
+          <h2 class="text-4xl md:text-5xl font-display mb-4" style="color:var(--ink)">Step-by-Step <span class="flame-text">Progression</span></h2>
+          <p class="text-lg max-w-2xl mx-auto" style="color:var(--ink-soft)">A logical progression path through the 3 years of training, maximizing buffs and hitting Ramen Jamboree quotas.</p>
+        </div>
+        <div class="relative max-w-4xl mx-auto">
+          <div class="timeline-line hidden md:block"></div>
+          <div id="timeline-container"></div>
+        </div>
+      </div>
+
+      <!-- Mechanics -->
+      <div id="mechanics" class="mb-24">
+        <div class="text-center mb-12">
+          <div class="chip mb-4" style="background:rgba(255,179,71,.3);color:var(--flame)"><i class="fas fa-cogs"></i> Mechanics</div>
+          <h2 class="text-4xl md:text-5xl font-display mb-4" style="color:var(--ink)">Cooking Up <span class="flame-text">Success</span></h2>
+          <p class="text-lg max-w-2xl mx-auto" style="color:var(--ink-soft)">From Learning Gauge to Ramen Jamboree — the systems that power your ramen journey.</p>
+        </div>
+        <div class="flex flex-wrap gap-2 justify-center mb-8">
+          <button class="tab-btn active" data-mech="link"><i class="fas fa-link mr-1"></i>Scenario Link</button>
+          <button class="tab-btn" data-mech="gauge"><i class="fas fa-tachometer-alt mr-1"></i>Learning Gauge</button>
+          <button class="tab-btn" data-mech="party"><i class="fas fa-utensils mr-1"></i>Tasting Party</button>
+          <button class="tab-btn" data-mech="rmj"><i class="fas fa-trophy mr-1"></i>Ramen Jamboree</button>
+        </div>
+
+        <div id="mech-link" class="mech-content">
+          <div class="glass p-8">
+            <h3 class="font-display text-2xl mb-3" style="color:var(--ink)"><i class="fas fa-link mr-2" style="color:var(--flame)"></i>Scenario Linked Friend Support Cards</h3>
+            <p class="text-sm mb-6" style="color:var(--ink-soft)">Scenario Linked Friend Support Cards benefit your training in various ways just by slotting in your deck. Only the highest bonuses available will be applied.</p>
+            <div class="overflow-x-auto">
+              <table class="glass-table w-full">
+                <thead><tr><th>Support Card</th><th>Base Learning Gauge</th><th>Tricks (Region Sel.)</th><th>Secret Ingredients (Dating)</th><th>Summer Camp</th></tr></thead>
+                <tbody>
+                  <tr><td><b>SSR [一杯のノスタルジア]</b><br><span class="text-xs" style="color:var(--ink-soft)">Tazuna Hayakawa</span></td><td><span class="chip" style="background:rgba(255,126,95,.3);color:#a13a1a">+10 / training</span></td><td><b>+2 Tricks</b></td><td><b>+2 Secret</b></td><td><b>Max out</b> every turn</td></tr>
+                  <tr><td>Any other Scenario Linked<br><span class="text-xs" style="color:var(--ink-soft)">Friend Support Card</span></td><td><span class="chip" style="background:rgba(255,179,71,.3);color:#a55a00">+5 / training</span></td><td>+1 Trick</td><td>+1 Secret</td><td><b>Double</b> gauge gain</td></tr>
+                  <tr><td>No Scenario Linked<br><span class="text-xs" style="color:var(--ink-soft)">Friend Support Card</span></td><td><span class="chip" style="background:rgba(255,255,255,.5);color:var(--ink-soft)">+3 / training</span></td><td>—</td><td>—</td><td>—</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div id="mech-gauge" class="mech-content hidden">
+          <div class="grid md:grid-cols-3 gap-5 mb-6">
+            <div class="glass-orange p-6 text-center"><div class="ingredient-icon mx-auto mb-3" style="background:linear-gradient(135deg,#ffb347,#ff7e5f);width:48px;height:48px;font-size:22px"><i class="fas fa-bowl-rice"></i></div><h4 class="font-display text-lg mb-1">Noodle</h4><p class="text-xs" style="color:var(--ink-soft)">One of three ingredient types</p></div>
+            <div class="glass-pink p-6 text-center"><div class="ingredient-icon mx-auto mb-3" style="background:linear-gradient(135deg,#ffb6c1,#ff7e5f);width:48px;height:48px;font-size:22px"><i class="fas fa-mug-hot"></i></div><h4 class="font-display text-lg mb-1">Soup</h4><p class="text-xs" style="color:var(--ink-soft)">One of three ingredient types</p></div>
+            <div class="glass-green p-6 text-center"><div class="ingredient-icon mx-auto mb-3" style="background:linear-gradient(135deg,#88d8a8,#7ed8d8);width:48px;height:48px;font-size:22px"><i class="fas fa-pepper-hot"></i></div><h4 class="font-display text-lg mb-1">Topping</h4><p class="text-xs" style="color:var(--ink-soft)">One of three ingredient types</p></div>
+          </div>
+          <div class="glass p-8">
+            <h3 class="font-display text-2xl mb-3" style="color:var(--ink)"><i class="fas fa-tachometer-alt mr-2" style="color:var(--flame)"></i>How It Works</h3>
+            <div class="grid md:grid-cols-2 gap-6">
+              <div>
+                <p class="text-sm leading-relaxed mb-3" style="color:var(--ink)">Learning Gauges increase every turn (except training failed / skipped by lazy habit) by the amount of base Learning Gauge gain.</p>
+                <p class="text-sm leading-relaxed mb-3" style="color:var(--ink)">Each training facility has a <b>random bubble</b> of an ingredient assigned every turn, boosting that ingredient's gain. Regions also boost one ingredient's gauge gain.</p>
+                <p class="text-sm leading-relaxed" style="color:var(--ink)">Non-support card characters, Friend / Group Support Cards in training, and Friendship Training all boost Learning Gauge gain.</p>
+              </div>
+              <div>
+                <div class="glass-orange p-5 mb-4">
+                  <div class="text-xs font-bold mb-2" style="color:var(--ink-soft)">EXAMPLE GAUGE (7 = 1 Trick)</div>
+                  <div class="flex gap-1 h-8" id="gauge-demo">
+                    <div class="gauge-segment filled" style="background:#ffb347;color:#ffb347"></div>
+                    <div class="gauge-segment filled" style="background:#ffb347;color:#ffb347"></div>
+                    <div class="gauge-segment filled" style="background:#ffb347;color:#ffb347"></div>
+                    <div class="gauge-segment filled" style="background:#ffb347;color:#ffb347"></div>
+                    <div class="gauge-segment filled" style="background:#ffb347;color:#ffb347"></div>
+                    <div class="gauge-segment" style="background:rgba(255,179,71,.2)"></div>
+                    <div class="gauge-segment" style="background:rgba(255,179,71,.2)"></div>
+                  </div>
+                  <div class="text-xs mt-2" style="color:var(--ink-soft)">5 / 7 — train more to earn a Trick!</div>
+                </div>
+                <ul class="text-sm space-y-2" style="color:var(--ink)">
+                  <li class="arrow-bullet">7 gauge = 1 Trick of that ingredient type</li>
+                  <li class="arrow-bullet">Gauge resets after hitting 7 (no overlap)</li>
+                  <li class="arrow-bullet">Hold max <b>10 Tricks</b> at once</li>
+                  <li class="arrow-bullet">Overflow discards the oldest Trick</li>
+                  <li class="arrow-bullet">Tricks discarded after each RMJ</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="mech-party" class="mech-content hidden">
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="glass p-8">
+              <h3 class="font-display text-2xl mb-3" style="color:var(--ink)"><i class="fas fa-utensils mr-2" style="color:var(--flame)"></i>Tasting Party</h3>
+              <p class="text-sm leading-relaxed mb-4" style="color:var(--ink)">Activate via the button on the left side of the training screen. Use Tricks to cook ramen and receive Region Effects of the chosen recipe.</p>
+              <ul class="text-sm space-y-2" style="color:var(--ink)">
+                <li class="arrow-bullet">Each recipe requires different Tricks</li>
+                <li class="arrow-bullet">Secret Ingredients substitute any Trick</li>
+                <li class="arrow-bullet">Up to <b>2 Secret Ingredients</b> per Tasting Party</li>
+                <li class="arrow-bullet">Hold max <b>4 Secret Ingredients</b> at once</li>
+                <li class="arrow-bullet">NOT discarded after RMJ (unlike Tricks)</li>
+              </ul>
+            </div>
+            <div class="glass p-8">
+              <h3 class="font-display text-xl mb-4" style="color:var(--ink)">Secret Ingredient Sources</h3>
+              <div class="space-y-3">
+                <div class="flex items-center gap-3 p-3 rounded-xl" style="background:rgba(255,179,71,.2)"><div class="ingredient-icon" style="background:linear-gradient(135deg,#ffb347,#ff7e5f)">R</div><div><b class="text-sm">Region Selection</b><div class="text-xs" style="color:var(--ink-soft)">2 per event</div></div></div>
+                <div class="flex items-center gap-3 p-3 rounded-xl" style="background:rgba(136,216,168,.2)"><div class="ingredient-icon" style="background:linear-gradient(135deg,#88d8a8,#7ed8d8)">S</div><div><b class="text-sm">Summer Camp</b><div class="text-xs" style="color:var(--ink-soft)">2 early July, 1 late July, 1 early Aug, 1 late Aug</div></div></div>
+                <div class="flex items-center gap-3 p-3 rounded-xl" style="background:rgba(255,182,193,.2)"><div class="ingredient-icon" style="background:linear-gradient(135deg,#ffb6c1,#ff7e5f)">D</div><div><b class="text-sm">Dating (Scenario Linked Friend)</b><div class="text-xs" style="color:var(--ink-soft)">2 with SSR Tazuna, 1 with others</div></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="glass p-8 mt-6">
+            <h3 class="font-display text-2xl mb-4" style="color:var(--ink)"><i class="fas fa-magic mr-2" style="color:var(--flame)"></i>Base Tasting Party Effects</h3>
+            <p class="text-sm mb-5" style="color:var(--ink-soft)">Activating Tasting Party grants buffs, upgrades Region Effects, and grants Excitement Pts. Only 3 bonuses at first — more unlock as the run progresses.</p>
+            <div class="overflow-x-auto">
+              <table class="glass-table w-full">
+                <thead><tr><th>Bonus</th><th>Junior</th><th>Classic</th><th>Senior</th></tr></thead>
+                <tbody>
+                  <tr><td><b>Training Bonus</b></td><td>15%</td><td>15%</td><td>15%</td></tr>
+                  <tr><td><b>Failure Rate Down</b></td><td>30%</td><td>50%</td><td>100%</td></tr>
+                  <tr><td><b>Friendship Bonus</b></td><td>—</td><td>30%</td><td>45%</td></tr>
+                  <tr><td><b>Bond Gauge</b></td><td>+10</td><td>—</td><td>—</td></tr>
+                  <tr><td><b>Base Stats Limit Break</b></td><td>—</td><td>+20</td><td>+40</td></tr>
+                  <tr><td><b>Skill Pt Limit Break</b></td><td>—</td><td>+20</td><td>+40</td></tr>
+                  <tr><td><b>Hint Events</b></td><td>Selected training only</td><td>All available Hint Events</td><td>All Support Cards activate Hint Event</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div id="mech-rmj" class="mech-content hidden">
+          <div class="glass p-8 mb-6">
+            <h3 class="font-display text-2xl mb-3" style="color:var(--ink)"><i class="fas fa-trophy mr-2" style="color:var(--flame)"></i>Ramen Jamboree (RMJ)</h3>
+            <p class="text-sm leading-relaxed mb-4" style="color:var(--ink)">End-of-year event. Excitement Pts from Tasting Party affect the result. Better results = stronger passive bonuses (stack additively).</p>
+            <div class="grid md:grid-cols-3 gap-4 mb-6">
+              <div class="glass-pink p-5 text-center"><div class="text-xs font-bold mb-1" style="color:var(--ink-soft)">1st RMJ</div><div class="font-display text-lg" style="color:var(--ink)">End of Junior</div><div class="text-xs mt-1" style="color:var(--ink-soft)">盛況 / 大盛況</div></div>
+              <div class="glass-orange p-5 text-center"><div class="text-xs font-bold mb-1" style="color:var(--ink-soft)">2nd RMJ</div><div class="font-display text-lg" style="color:var(--ink)">End of Classic</div><div class="text-xs mt-1" style="color:var(--ink-soft)">盛況 / 大盛況</div></div>
+              <div class="glass-flame p-5 text-center"><div class="text-xs font-bold mb-1" style="color:var(--ink-soft)">3rd RMJ</div><div class="font-display text-lg" style="color:var(--ink)">Super RMJ EX</div><div class="text-xs mt-1" style="color:var(--ink-soft)">盛況 / 大盛況 / 超盛況</div></div>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="glass-table w-full">
+                <thead>
+                  <tr><th>Evaluation</th><th>1st RMJ</th><th>1st RMJ</th><th>2nd RMJ</th><th>2nd RMJ</th><th>3rd RMJ</th><th>3rd RMJ</th><th>3rd RMJ</th></tr>
+                  <tr><th></th><th>盛況</th><th>大盛況</th><th>盛況</th><th>大盛況</th><th>盛況</th><th>大盛況</th><th>超盛況</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><b>Quota</b></td><td>—</td><td>1500</td><td>—</td><td>3000</td><td>—</td><td>3500</td><td>5000</td></tr>
+                  <tr><td><b>Friendship Bonus</b></td><td>+3%</td><td>+5%</td><td>+5%</td><td>+10%</td><td>+15%</td><td>+25%</td><td>—</td></tr>
+                  <tr><td><b>Speciality Rate Up</b></td><td>+30</td><td>+80</td><td>+60</td><td>+120</td><td>+150</td><td>+250</td><td>—</td></tr>
+                  <tr><td><b>Hint Rate Up</b></td><td>+15%</td><td>+30%</td><td>+30%</td><td>+75%</td><td>+75%</td><td>+125%</td><td>—</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="grid md:grid-cols-2 gap-5">
+            <div class="glass-green p-6"><h4 class="font-display text-lg mb-3" style="color:var(--ink)"><i class="fas fa-bolt mr-2" style="color:#88d8a8"></i>From Excitement Pt</h4><ul class="text-sm space-y-2" style="color:var(--ink)"><li class="arrow-bullet">Training Bonus</li><li class="arrow-bullet">Friendship Bonus</li><li class="arrow-bullet">Speciality Rate Up</li><li class="arrow-bullet">Hint Rate Up</li></ul></div>
+            <div class="glass-pink p-6"><h4 class="font-display text-lg mb-3" style="color:var(--ink)"><i class="fas fa-trash-alt mr-2" style="color:#ffb6c1"></i>Trick Disposal</h4><p class="text-sm leading-relaxed" style="color:var(--ink)">Ramen Jamboree discards all currently owned Tricks. They are used up to increase Energy recovery from the event (formula unknown).</p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ultimate Ramen -->
+      <div id="ultimate">
+        <div class="text-center mb-12">
+          <div class="chip mb-4" style="background:rgba(255,126,95,.3);color:var(--flame)"><i class="fas fa-crown"></i> Super RMJ EX</div>
+          <h2 class="text-4xl md:text-5xl font-display mb-4" style="color:var(--ink)">The <span class="flame-text">Ultimate Ramen</span></h2>
+          <p class="text-lg max-w-2xl mx-auto" style="color:var(--ink-soft)">Before the 3rd RMJ, choose 1 of 3 Ultimate Ramen to finish your run. Effects active during URA Finals; Base Tasting Party Effects disabled.</p>
+        </div>
+        <div class="grid md:grid-cols-3 gap-6" id="ultimate-grid"></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PAGE 4: GALLERY -->
+  <section id="page-gallery" class="page">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-12">
+        <div class="chip mb-4" style="background:rgba(255,126,95,.3);color:var(--flame)"><i class="fab fa-youtube"></i> Video Gallery</div>
+        <h2 class="text-4xl md:text-5xl font-display mb-4" style="color:var(--ink)">Ramen <span class="flame-text">Showcase</span></h2>
+        <p class="text-lg max-w-2xl mx-auto" style="color:var(--ink-soft)">Watch trailers, playthroughs, and guides for the 14th Training Scenario.</p>
+      </div>
+      <div class="grid md:grid-cols-2 gap-8" id="video-grid"></div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Video Modal -->
+<div id="video-modal" class="video-modal" onclick="closeVideo(event)">
+  <div class="video-frame-wrapper" id="video-wrapper" onclick="event.stopPropagation()">
+    <div class="flex justify-between items-center mb-3 px-2">
+      <h3 id="modal-title" class="font-display text-lg text-white">Video Title</h3>
+      <button onclick="closeVideo()" class="text-white hover:text-red-400 transition-colors text-2xl"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="video-frame" id="video-frame"></div>
   </div>
-</section>
-
-<!-- ULTIMATE RAMEN -->
-<section id="ultimate" class="relative z-10 py-20 px-6">
-  <div class="max-w-7xl mx-auto">
-    <div class="text-center mb-12 reveal">
-      <div class="chip mb-4" style="background:rgba(255,126,95,.3);color:var(--flame)">
-        <i class="fas fa-crown"></i> Super RMJ EX
-      </div>
-      <h2 class="text-4xl md:text-5xl font-display mb-4" style="color:var(--ink)">The <span class="flame-text">Ultimate Ramen</span></h2>
-      <p class="text-lg max-w-2xl mx-auto" style="color:var(--ink-soft)">Before the 3rd RMJ, choose 1 of 3 Ultimate Ramen to finish your run. Effects active during URA Finals; Base Tasting Party Effects disabled.</p>
-    </div>
-    <div class="grid md:grid-cols-3 gap-6" id="ultimate-grid"></div>
-  </div>
-</section>
+</div>
 
 <!-- Footer -->
 <footer class="relative z-10 py-12 px-6 mt-12">
@@ -744,7 +574,7 @@ import * as THREE from 'three';
 
 // ===== 3D Ramen Bowl Scene =====
 const container = document.getElementById('ramen-3d-container');
-let w = container.clientWidth || 400; // Fallback to prevent 0 dimension bug
+let w = container.clientWidth || 400;
 let h = container.clientHeight || 400;
 
 const scene = new THREE.Scene();
@@ -757,7 +587,6 @@ renderer.setSize(w, h);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 container.appendChild(renderer.domElement);
 
-// Lighting
 scene.add(new THREE.AmbientLight(0xfff5e0, 0.7));
 const dirLight = new THREE.DirectionalLight(0xffd0a0, 1.4);
 dirLight.position.set(3, 6, 3);
@@ -769,7 +598,6 @@ const rimLight = new THREE.PointLight(0x7ed8d8, 0.8, 12);
 rimLight.position.set(3, -1, -3);
 scene.add(rimLight);
 
-// Bowl (lathe geometry)
 const bowlGroup = new THREE.Group();
 const bowlPoints = [];
 for (let i = 0; i <= 12; i++) {
@@ -779,14 +607,9 @@ for (let i = 0; i <= 12; i++) {
   bowlPoints.push(new THREE.Vector2(r, y));
 }
 const bowlGeo = new THREE.LatheGeometry(bowlPoints, 64);
-const bowlMat = new THREE.MeshPhongMaterial({
-  color: 0xff7e5f, shininess: 40, side: THREE.DoubleSide,
-  transparent: true, opacity: 0.92
-});
-const bowl = new THREE.Mesh(bowlGeo, bowlMat);
-bowlGroup.add(bowl);
+const bowlMat = new THREE.MeshPhongMaterial({ color: 0xff7e5f, shininess: 40, side: THREE.DoubleSide, transparent: true, opacity: 0.92 });
+bowlGroup.add(new THREE.Mesh(bowlGeo, bowlMat));
 
-// Inner bowl pattern
 const innerGeo = new THREE.LatheGeometry(bowlPoints.map(p => new THREE.Vector2(p.x * 0.95, p.y)), 64);
 const innerMat = new THREE.MeshPhongMaterial({ color: 0xffe5d0, shininess: 60 });
 const inner = new THREE.Mesh(innerGeo, innerMat);
@@ -794,17 +617,13 @@ inner.scale.setScalar(0.98);
 inner.position.y = -0.02;
 bowlGroup.add(inner);
 
-// Soup surface
 const soupGeo = new THREE.CircleGeometry(1.95, 64);
-const soupMat = new THREE.MeshPhongMaterial({
-  color: 0xffb347, transparent: true, opacity: 0.9, shininess: 100
-});
+const soupMat = new THREE.MeshPhongMaterial({ color: 0xffb347, transparent: true, opacity: 0.9, shininess: 100 });
 const soup = new THREE.Mesh(soupGeo, soupMat);
 soup.rotation.x = -Math.PI / 2;
 soup.position.y = -0.15;
 bowlGroup.add(soup);
 
-// Noodles (curved tubes)
 const noodleMat = new THREE.MeshPhongMaterial({ color: 0xffe5a0, shininess: 30 });
 for (let i = 0; i < 10; i++) {
   const angle = (i / 10) * Math.PI * 2;
@@ -814,52 +633,32 @@ for (let i = 0; i < 10; i++) {
     new THREE.Vector3(Math.cos(angle + 0.5) * r * 0.8, 0.0, Math.sin(angle + 0.5) * r * 0.8),
     new THREE.Vector3(Math.cos(angle + 1.0) * r * 0.6, -0.05, Math.sin(angle + 1.0) * r * 0.6)
   ]);
-  const geo = new THREE.TubeGeometry(curve, 24, 0.06, 8, false);
-  bowlGroup.add(new THREE.Mesh(geo, noodleMat));
+  bowlGroup.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 24, 0.06, 8, false), noodleMat));
 }
 
-// Egg
-const eggWhite = new THREE.Mesh(
-  new THREE.SphereGeometry(0.45, 32, 32),
-  new THREE.MeshPhongMaterial({ color: 0xfff8e8, shininess: 40 })
-);
+const eggWhite = new THREE.Mesh(new THREE.SphereGeometry(0.45, 32, 32), new THREE.MeshPhongMaterial({ color: 0xfff8e8, shininess: 40 }));
 eggWhite.scale.set(1, 0.45, 1);
 eggWhite.position.set(0.6, -0.05, 0.4);
 bowlGroup.add(eggWhite);
 
-const eggYolk = new THREE.Mesh(
-  new THREE.SphereGeometry(0.22, 32, 32),
-  new THREE.MeshPhongMaterial({ color: 0xffb347, emissive: 0xff7e5f, emissiveIntensity: 0.4, shininess: 80 })
-);
+const eggYolk = new THREE.Mesh(new THREE.SphereGeometry(0.22, 32, 32), new THREE.MeshPhongMaterial({ color: 0xffb347, emissive: 0xff7e5f, emissiveIntensity: 0.4, shininess: 80 }));
 eggYolk.scale.set(1, 0.5, 1);
 eggYolk.position.set(0.6, 0.0, 0.4);
 bowlGroup.add(eggYolk);
 
-// Narutomaki (swirl)
-const naruto = new THREE.Mesh(
-  new THREE.CylinderGeometry(0.35, 0.35, 0.1, 32),
-  new THREE.MeshPhongMaterial({ color: 0xff9999 })
-);
+const naruto = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.1, 32), new THREE.MeshPhongMaterial({ color: 0xff9999 }));
 naruto.position.set(-0.7, -0.05, -0.4);
 bowlGroup.add(naruto);
 
-const narutoPink = new THREE.Mesh(
-  new THREE.CylinderGeometry(0.15, 0.15, 0.11, 32),
-  new THREE.MeshPhongMaterial({ color: 0xff6b9d })
-);
+const narutoPink = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 0.11, 32), new THREE.MeshPhongMaterial({ color: 0xff6b9d }));
 narutoPink.position.set(-0.7, -0.05, -0.4);
 bowlGroup.add(narutoPink);
 
-// Chashu (pork slice)
-const chashu = new THREE.Mesh(
-  new THREE.BoxGeometry(0.5, 0.08, 0.4),
-  new THREE.MeshPhongMaterial({ color: 0xffa07a })
-);
+const chashu = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.08, 0.4), new THREE.MeshPhongMaterial({ color: 0xffa07a }));
 chashu.position.set(0.2, -0.05, -0.7);
 chashu.rotation.y = 0.5;
 bowlGroup.add(chashu);
 
-// Green onions (small green spheres)
 const onionMat = new THREE.MeshPhongMaterial({ color: 0x88d8a8 });
 for (let i = 0; i < 15; i++) {
   const angle = Math.random() * Math.PI * 2;
@@ -871,60 +670,31 @@ for (let i = 0; i < 15; i++) {
 
 scene.add(bowlGroup);
 
-// Orbiting ingredient particles
 const orbitColors = [0xffb6c1, 0x88d8a8, 0xffb347, 0x7ed8d8, 0xff7e5f];
 const orbiters = [];
 for (let i = 0; i < 18; i++) {
   const size = 0.08 + Math.random() * 0.08;
-  const geo = i % 3 === 0
-    ? new THREE.SphereGeometry(size, 16, 16)
-    : i % 3 === 1
-    ? new THREE.BoxGeometry(size, size, size)
-    : new THREE.TetrahedronGeometry(size);
-  const mat = new THREE.MeshPhongMaterial({
-    color: orbitColors[i % orbitColors.length],
-    emissive: orbitColors[i % orbitColors.length],
-    emissiveIntensity: 0.2,
-    transparent: true,
-    opacity: 0.9
-  });
+  const geo = i % 3 === 0 ? new THREE.SphereGeometry(size, 16, 16) : i % 3 === 1 ? new THREE.BoxGeometry(size, size, size) : new THREE.TetrahedronGeometry(size);
+  const mat = new THREE.MeshPhongMaterial({ color: orbitColors[i % orbitColors.length], emissive: orbitColors[i % orbitColors.length], emissiveIntensity: 0.2, transparent: true, opacity: 0.9 });
   const mesh = new THREE.Mesh(geo, mat);
   const angle = (i / 18) * Math.PI * 2;
   const radius = 2.8 + Math.random() * 0.8;
-  mesh.userData = {
-    angle, radius,
-    speed: 0.2 + Math.random() * 0.4,
-    yBase: Math.random() * 2 - 0.5,
-    yOffset: Math.random() * Math.PI * 2,
-    rotSpeed: (Math.random() - 0.5) * 0.05
-  };
+  mesh.userData = { angle, radius, speed: 0.2 + Math.random() * 0.4, yBase: Math.random() * 2 - 0.5, yOffset: Math.random() * Math.PI * 2, rotSpeed: (Math.random() - 0.5) * 0.05 };
   orbiters.push(mesh);
   scene.add(mesh);
 }
 
-// Steam particles
 const steamParticles = [];
-const steamMat = new THREE.MeshBasicMaterial({
-  color: 0xffffff, transparent: true, opacity: 0.15
-});
+const steamMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.15 });
 for (let i = 0; i < 25; i++) {
   const size = 0.15 + Math.random() * 0.25;
   const s = new THREE.Mesh(new THREE.SphereGeometry(size, 8, 8), steamMat.clone());
-  s.position.set(
-    (Math.random() - 0.5) * 2.5,
-    0.3 + Math.random() * 0.5,
-    (Math.random() - 0.5) * 2.5
-  );
-  s.userData = {
-    speed: 0.01 + Math.random() * 0.02,
-    startOpacity: 0.15 + Math.random() * 0.2,
-    age: Math.random() * 100
-  };
+  s.position.set((Math.random() - 0.5) * 2.5, 0.3 + Math.random() * 0.5, (Math.random() - 0.5) * 2.5);
+  s.userData = { speed: 0.01 + Math.random() * 0.02, startOpacity: 0.15 + Math.random() * 0.2, age: Math.random() * 100 };
   steamParticles.push(s);
   scene.add(s);
 }
 
-// Mouse interaction
 let mouseX = 0, mouseY = 0, targetRotX = 0.1, targetRotY = 0;
 let isDragging = false, dragStartX = 0, dragStartY = 0;
 let manualRotY = 0;
@@ -943,41 +713,21 @@ container.addEventListener('mousemove', (e) => {
     dragStartY = e.clientY;
   }
 });
-container.addEventListener('mousedown', (e) => {
-  isDragging = true;
-  dragStartX = e.clientX;
-  dragStartY = e.clientY;
-});
+container.addEventListener('mousedown', (e) => { isDragging = true; dragStartX = e.clientX; dragStartY = e.clientY; });
 window.addEventListener('mouseup', () => { isDragging = false; });
-container.addEventListener('touchstart', (e) => {
-  isDragging = true;
-  dragStartX = e.touches[0].clientX;
-});
-container.addEventListener('touchmove', (e) => {
-  if (isDragging) {
-    const dx = e.touches[0].clientX - dragStartX;
-    manualRotY += dx * 0.01;
-    dragStartX = e.touches[0].clientX;
-  }
-});
+container.addEventListener('touchstart', (e) => { isDragging = true; dragStartX = e.touches[0].clientX; });
+container.addEventListener('touchmove', (e) => { if (isDragging) { const dx = e.touches[0].clientX - dragStartX; manualRotY += dx * 0.01; dragStartX = e.touches[0].clientX; } });
 container.addEventListener('touchend', () => { isDragging = false; });
 
-// Animation loop
 let t = 0;
 function animate() {
   requestAnimationFrame(animate);
   t += 0.01;
-
-  // Auto rotation + manual drag
   bowlGroup.rotation.y += 0.004;
   bowlGroup.rotation.y += manualRotY;
   manualRotY *= 0.92;
-
-  // Smooth tilt toward mouse
   scene.rotation.y += (targetRotY - scene.rotation.y) * 0.05;
   scene.rotation.x += (targetRotX - scene.rotation.x) * 0.05;
-
-  // Orbiting ingredients
   orbiters.forEach(o => {
     o.userData.angle += 0.01 * o.userData.speed;
     o.position.x = Math.cos(o.userData.angle) * o.userData.radius;
@@ -986,27 +736,18 @@ function animate() {
     o.rotation.x += o.userData.rotSpeed;
     o.rotation.y += o.userData.rotSpeed * 1.3;
   });
-
-  // Steam rising
   steamParticles.forEach(s => {
     s.position.y += s.userData.speed;
     s.userData.age += 1;
     const lifeT = (s.userData.age % 200) / 200;
     s.material.opacity = s.userData.startOpacity * (1 - lifeT);
-    if (s.position.y > 3) {
-      s.position.y = 0.3;
-      s.position.x = (Math.random() - 0.5) * 2.5;
-      s.position.z = (Math.random() - 0.5) * 2.5;
-      s.userData.age = 0;
-    }
+    if (s.position.y > 3) { s.position.y = 0.3; s.position.x = (Math.random() - 0.5) * 2.5; s.position.z = (Math.random() - 0.5) * 2.5; s.userData.age = 0; }
     s.scale.setScalar(1 + lifeT * 1.5);
   });
-
   renderer.render(scene, camera);
 }
 animate();
 
-// Bug Fix: Proper responsive resizing using ResizeObserver
 const resizeObserver = new ResizeObserver(() => {
   const newW = container.clientWidth;
   const newH = container.clientHeight;
@@ -1020,6 +761,43 @@ resizeObserver.observe(container);
 </script>
 
 <script>
+// ===== SPA Router =====
+function navigateTo(pageId) {
+  const current = document.querySelector('.page.active');
+  if (current) {
+    current.style.opacity = '0';
+    setTimeout(() => {
+      current.classList.remove('active');
+      current.style.display = 'none';
+      
+      const target = document.getElementById(pageId);
+      target.style.display = 'block';
+      target.style.opacity = '0';
+      target.classList.add('active');
+      
+      requestAnimationFrame(() => {
+        target.style.opacity = '1';
+                        // Trigger reveals manually on page change
+                        target.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
+                        window.scrollTo(0, 0);
+                    });
+                }, 300);
+  }
+  // Update Nav
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.classList.toggle('active', link.getAttribute('data-nav') === pageId);
+  });
+}
+
+// Initial display setup
+document.querySelectorAll('.page').forEach(p => {
+    if (!p.classList.contains('active')) {
+        p.style.display = 'none';
+    } else {
+        p.style.opacity = '1';
+    }
+});
+
 // ===== Particle Background (High DPI Fix) =====
 const pCanvas = document.getElementById('particles');
 const pctx = pCanvas.getContext('2d');
@@ -1030,7 +808,7 @@ function resizeP() {
   pCanvas.height = window.innerHeight * dpr;
   pCanvas.style.width = window.innerWidth + 'px';
   pCanvas.style.height = window.innerHeight + 'px';
-  pctx.setTransform(1, 0, 0, 1, 0, 0); // Reset transform before scaling
+  pctx.setTransform(1, 0, 0, 1, 0, 0);
   pctx.scale(dpr, dpr);
 }
 resizeP();
@@ -1068,9 +846,7 @@ class Particle {
     pctx.globalAlpha = this.opacity;
     pctx.fillStyle = this.color;
     if (this.shape === 'circle') {
-      pctx.beginPath();
-      pctx.arc(0, 0, this.size, 0, Math.PI * 2);
-      pctx.fill();
+      pctx.beginPath(); pctx.arc(0, 0, this.size, 0, Math.PI * 2); pctx.fill();
     } else if (this.shape === 'noodle') {
       pctx.fillRect(-this.size / 3, -this.size, this.size * 0.6, this.size * 2);
     } else if (this.shape === 'leaf') {
@@ -1088,8 +864,7 @@ class Particle {
         const a2 = a + Math.PI / 5;
         pctx.lineTo(Math.cos(a2) * this.size * 0.4, Math.sin(a2) * this.size * 0.4);
       }
-      pctx.closePath();
-      pctx.fill();
+      pctx.closePath(); pctx.fill();
     }
     pctx.restore();
   }
@@ -1104,17 +879,6 @@ function animateParticles() {
 }
 animateParticles();
 
-// ===== Scroll Reveal =====
-const revealObserver = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.classList.add('visible');
-      revealObserver.unobserve(e.target);
-    }
-  });
-}, { threshold: 0.1 });
-document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
-
 // ===== Tabs (Scenario Rules) =====
 document.querySelectorAll('[data-tab]').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -1123,8 +887,6 @@ document.querySelectorAll('[data-tab]').forEach(btn => {
     document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
     const target = document.getElementById('tab-' + btn.dataset.tab);
     target.classList.remove('hidden');
-    target.classList.add('reveal');
-    setTimeout(() => target.classList.add('visible'), 50);
   });
 });
 
@@ -1136,43 +898,17 @@ document.querySelectorAll('[data-mech]').forEach(btn => {
     document.querySelectorAll('.mech-content').forEach(c => c.classList.add('hidden'));
     const target = document.getElementById('mech-' + btn.dataset.mech);
     target.classList.remove('hidden');
-    target.classList.add('reveal');
-    setTimeout(() => target.classList.add('visible'), 50);
   });
 });
 
 // ===== Skill Evolution Data =====
 const evolutions = [
-  {
-    base: 'ギアチェンジ', evolved: '秘伝の味変アレンジ！',
-    desc: '<Mile> Increase speed by 0.45 (2.4s) if you are in front during the middle leg.',
-    color: 'pink'
-  },
-  {
-    base: 'お先に失礼っ！', evolved: 'バリカタ、一丁上がり！',
-    desc: 'Increase speed by 0.45 (3s) if another opponent has been right behind you for a while.',
-    color: 'orange'
-  },
-  {
-    base: '時中の妙', evolved: '湯切りの妙技',
-    desc: 'Increase speed by 0.45 (1.8s) during the middle leg. In medium races, if all base stats are higher than 1000, increase current speed by 0.55 (1.8s) instead.',
-    color: 'flame'
-  },
-  {
-    base: 'パスファインダー', evolved: '麺の極意、見つけたり',
-    desc: '<Medium/Long> Increase speed by 0.35 for a while (4s) during the middle leg.',
-    color: 'green'
-  },
-  {
-    base: '元気溌剌', evolved: '元気特盛のおもてなし',
-    desc: '<Mile> Increase speed by 0.45 (3s) if you are in last spurt in the first half of the very final leg.',
-    color: 'cyan'
-  },
-  {
-    base: '悠々自適', evolved: 'じっくり仕込みの一杯',
-    desc: '<Medium/Long> Recover 7.5% of stamina and increase current speed by 0.15 (2.4s) in the first half of the middle leg.',
-    color: 'pink'
-  }
+  { base: 'ギアチェンジ', evolved: '秘伝の味変アレンジ！', desc: '<Mile> Increase speed by 0.45 (2.4s) if you are in front during the middle leg.', color: 'pink' },
+  { base: 'お先に失礼っ！', evolved: 'バリカタ、一丁上がり！', desc: 'Increase speed by 0.45 (3s) if another opponent has been right behind you for a while.', color: 'orange' },
+  { base: '時中の妙', evolved: '湯切りの妙技', desc: 'Increase speed by 0.45 (1.8s) during the middle leg. In medium races, if all base stats are higher than 1000, increase current speed by 0.55 (1.8s) instead.', color: 'flame' },
+  { base: 'パスファインダー', evolved: '麺の極意、見つけたり', desc: '<Medium/Long> Increase speed by 0.35 for a while (4s) during the middle leg.', color: 'green' },
+  { base: '元気溌剌', evolved: '元気特盛のおもてなし', desc: '<Mile> Increase speed by 0.45 (3s) if you are in last spurt in the first half of the very final leg.', color: 'cyan' },
+  { base: '悠々自適', evolved: 'じっくり仕込みの一杯', desc: '<Medium/Long> Recover 7.5% of stamina and increase current speed by 0.15 (2.4s) in the first half of the middle leg.', color: 'pink' }
 ];
 
 const evoGrid = document.getElementById('evolution-grid');
@@ -1196,86 +932,16 @@ evolutions.forEach((e, i) => {
 
 // ===== Region Data =====
 const regions = [
-  {
-    name: 'Sapporo', jp: '札幌', ramen: '濃厚味噌ラーメン', type: 'Miso',
-    stat: 'Speed', color: 'orange', icon: 'fa-bolt',
-    costs: [2, 2, 1],
-    jc: '20%→30% Training Bonus for Speed Training<br>50%→60% Friendship Bonus<br>Activates Hint Event 1× from random Speed Support Card',
-    sr: '50%→60% Training Bonus towards Skill Pt for Speed<br>1 random additional copy of Speed Support Card appears (if 4+ types in deck)',
-    years: ['junior', 'senior']
-  },
-  {
-    name: 'Hakodate', jp: '函館', ramen: 'すっきり塩ラーメン', type: 'Salt',
-    stat: 'Stamina', color: 'pink', icon: 'fa-heart-pulse',
-    costs: [1, 2, 2],
-    jc: '20%→30% Training Bonus for Stamina Training<br>60%→70% Friendship Bonus<br>Activates Hint Event 1× from random Stamina Support Card',
-    sr: '50%→60% Training Bonus towards Skill Pt for Stamina<br>1 random additional copy of Stamina Support Card appears (if 4+ types)',
-    years: ['junior', 'senior']
-  },
-  {
-    name: 'Niigata', jp: '新潟', ramen: '岩のり背脂ラーメン', type: 'Backfat',
-    stat: 'Power', color: 'flame', icon: 'fa-fist-raised',
-    costs: [3, 1, 1],
-    jc: '20%→30% Training Bonus for Power Training<br>60%→70% Friendship Bonus<br>Activates Hint Event 1× from random Power Support Card',
-    sr: '50%→60% Training Bonus towards Skill Pt for Power<br>1 random additional copy of Power Support Card appears (if 4+ types)',
-    years: ['junior', 'senior']
-  },
-  {
-    name: 'Fukushima', jp: '福島', ramen: 'あっさり醤油ラーメン', type: 'Soy',
-    stat: 'Guts', color: 'green', icon: 'fa-fire',
-    costs: [2, 3, 0],
-    jc: '20%→30% Training Bonus for Guts Training<br>60%→70% Friendship Bonus<br>Activates Hint Event 1× from random Guts Support Card',
-    sr: '50%→60% Training Bonus towards Skill Pt for Guts<br>1 random additional copy of Guts Support Card appears (if 4+ types)',
-    years: ['junior', 'senior']
-  },
-  {
-    name: 'Tokyo', jp: '東京', ramen: 'ガッツリ豚ラーメン', type: 'Pork',
-    stat: 'Wisdom', color: 'cyan', icon: 'fa-brain',
-    costs: [1, 1, 3],
-    jc: '20%→30% Training Bonus for Wisdom Training<br>60%→70% Friendship Bonus<br>Activates Hint Event 1× from random Wisdom Support Card',
-    sr: '50%→60% Training Bonus towards Skill Pt for Wisdom<br>1 random additional copy of Wisdom Support Card appears (if 4+ types)',
-    years: ['junior', 'senior']
-  },
-  {
-    name: 'Nakayama', jp: '中山', ramen: '玉ねぎ醤油ラーメン', type: 'Onion Soy',
-    stat: 'Speed/Power/Wisdom', color: 'orange', icon: 'fa-bolt',
-    costs: [2, 0, 3],
-    jc: '10%→20% Friendship Bonus for Speed, Power and Wisdom Training<br>Activates Hint Event 2× from random Speed Support Card',
-    sr: '40%→50% Friendship Bonus for SPW Training<br>50%→60% Training Bonus to Skill Pt for SPW<br>1 random additional copy in each of SPW training (if 4+ types)',
-    years: ['classic', 'senior']
-  },
-  {
-    name: 'Chukyo', jp: '中京', ramen: 'ウマ辛名古屋ラーメン', type: 'Spicy',
-    stat: 'Speed/Power/Guts', color: 'flame', icon: 'fa-pepper-hot',
-    costs: [3, 2, 0],
-    jc: '50%→60% Friendship Bonus for Power and Guts Training<br>Activates Hint Event 2× from random Power and Guts Support Card',
-    sr: '40%→50% Friendship Bonus for SPG Training<br>50%→60% Training Bonus to Skill Pt for SPG<br>1 random additional copy in each of SPG training (if 4+ types)',
-    years: ['classic', 'senior']
-  },
-  {
-    name: 'Kyoto', jp: '京都', ramen: '背脂ねぎラーメン', type: 'Backfat Leek',
-    stat: 'Speed/Stamina/Wisdom', color: 'green', icon: 'fa-leaf',
-    costs: [0, 3, 2],
-    jc: '50%→60% Friendship Bonus for Stamina and Guts Training<br>Activates Hint Event 2× from random Stamina and Guts Support Card',
-    sr: '40%→50% Friendship Bonus for SSW Training<br>50%→60% Training Bonus to Skill Pt for SSW<br>1 random additional copy in each of SSW training (if 4+ types)',
-    years: ['classic', 'senior']
-  },
-  {
-    name: 'Hanshin', jp: '阪神', ramen: '甘口醤油ラーメン', type: 'Sweet Soy',
-    stat: 'Speed/Stamina/Power', color: 'pink', icon: 'fa-heart',
-    costs: [2, 1, 2],
-    jc: '50%→60% Friendship Bonus for Stamina and Power Training<br>Activates Hint Event 2× from random Stamina and Power Support Card',
-    sr: '40%→50% Friendship Bonus for SSP Training<br>50%→60% Training Bonus to Skill Pt for SSP<br>1 random additional copy in each of SSP training (if 4+ types)',
-    years: ['classic', 'senior']
-  },
-  {
-    name: 'Kokura', jp: '小倉', ramen: '—', type: 'Wisdom Bowl',
-    stat: 'Speed/Guts/Wisdom', color: 'cyan', icon: 'fa-brain',
-    costs: [1, 3, 1],
-    jc: '50%→60% Friendship Bonus for Wisdom Training<br>Activates Hint Event 2× from random Wisdom Support Card',
-    sr: '40%→50% Friendship Bonus for SGW Training<br>50%→60% Training Bonus to Skill Pt for SGW<br>1 random additional copy in each of SGW training (if 4+ types)',
-    years: ['classic', 'senior']
-  }
+  { name: 'Sapporo', jp: '札幌', ramen: '濃厚味噌ラーメン', type: 'Miso', stat: 'Speed', color: 'orange', icon: 'fa-bolt', costs: [2, 2, 1], jc: '20%→30% Training Bonus for Speed Training<br>50%→60% Friendship Bonus<br>Activates Hint Event 1× from random Speed Support Card', sr: '50%→60% Training Bonus towards Skill Pt for Speed<br>1 random additional copy of Speed Support Card appears (if 4+ types in deck)', years: ['junior', 'senior'] },
+  { name: 'Hakodate', jp: '函館', ramen: 'すっきり塩ラーメン', type: 'Salt', stat: 'Stamina', color: 'pink', icon: 'fa-heart-pulse', costs: [1, 2, 2], jc: '20%→30% Training Bonus for Stamina Training<br>60%→70% Friendship Bonus<br>Activates Hint Event 1× from random Stamina Support Card', sr: '50%→60% Training Bonus towards Skill Pt for Stamina<br>1 random additional copy of Stamina Support Card appears (if 4+ types)', years: ['junior', 'senior'] },
+  { name: 'Niigata', jp: '新潟', ramen: '岩のり背脂ラーメン', type: 'Backfat', stat: 'Power', color: 'flame', icon: 'fa-fist-raised', costs: [3, 1, 1], jc: '20%→30% Training Bonus for Power Training<br>60%→70% Friendship Bonus<br>Activates Hint Event 1× from random Power Support Card', sr: '50%→60% Training Bonus towards Skill Pt for Power<br>1 random additional copy of Power Support Card appears (if 4+ types)', years: ['junior', 'senior'] },
+  { name: 'Fukushima', jp: '福島', ramen: 'あっさり醤油ラーメン', type: 'Soy', stat: 'Guts', color: 'green', icon: 'fa-fire', costs: [2, 3, 0], jc: '20%→30% Training Bonus for Guts Training<br>60%→70% Friendship Bonus<br>Activates Hint Event 1× from random Guts Support Card', sr: '50%→60% Training Bonus towards Skill Pt for Guts<br>1 random additional copy of Guts Support Card appears (if 4+ types)', years: ['junior', 'senior'] },
+  { name: 'Tokyo', jp: '東京', ramen: 'ガッツリ豚ラーメン', type: 'Pork', stat: 'Wisdom', color: 'cyan', icon: 'fa-brain', costs: [1, 1, 3], jc: '20%→30% Training Bonus for Wisdom Training<br>60%→70% Friendship Bonus<br>Activates Hint Event 1× from random Wisdom Support Card', sr: '50%→60% Training Bonus towards Skill Pt for Wisdom<br>1 random additional copy of Wisdom Support Card appears (if 4+ types)', years: ['junior', 'senior'] },
+  { name: 'Nakayama', jp: '中山', ramen: '玉ねぎ醤油ラーメン', type: 'Onion Soy', stat: 'Speed/Power/Wisdom', color: 'orange', icon: 'fa-bolt', costs: [2, 0, 3], jc: '10%→20% Friendship Bonus for Speed, Power and Wisdom Training<br>Activates Hint Event 2× from random Speed Support Card', sr: '40%→50% Friendship Bonus for SPW Training<br>50%→60% Training Bonus to Skill Pt for SPW<br>1 random additional copy in each of SPW training (if 4+ types)', years: ['classic', 'senior'] },
+  { name: 'Chukyo', jp: '中京', ramen: 'ウマ辛名古屋ラーメン', type: 'Spicy', stat: 'Speed/Power/Guts', color: 'flame', icon: 'fa-pepper-hot', costs: [3, 2, 0], jc: '50%→60% Friendship Bonus for Power and Guts Training<br>Activates Hint Event 2× from random Power and Guts Support Card', sr: '40%→50% Friendship Bonus for SPG Training<br>50%→60% Training Bonus to Skill Pt for SPG<br>1 random additional copy in each of SPG training (if 4+ types)', years: ['classic', 'senior'] },
+  { name: 'Kyoto', jp: '京都', ramen: '背脂ねぎラーメン', type: 'Backfat Leek', stat: 'Speed/Stamina/Wisdom', color: 'green', icon: 'fa-leaf', costs: [0, 3, 2], jc: '50%→60% Friendship Bonus for Stamina and Guts Training<br>Activates Hint Event 2× from random Stamina and Guts Support Card', sr: '40%→50% Friendship Bonus for SSW Training<br>50%→60% Training Bonus to Skill Pt for SSW<br>1 random additional copy in each of SSW training (if 4+ types)', years: ['classic', 'senior'] },
+  { name: 'Hanshin', jp: '阪神', ramen: '甘口醤油ラーメン', type: 'Sweet Soy', stat: 'Speed/Stamina/Power', color: 'pink', icon: 'fa-heart', costs: [2, 1, 2], jc: '50%→60% Friendship Bonus for Stamina and Power Training<br>Activates Hint Event 2× from random Stamina and Power Support Card', sr: '40%→50% Friendship Bonus for SSP Training<br>50%→60% Training Bonus to Skill Pt for SSP<br>1 random additional copy in each of SSP training (if 4+ types)', years: ['classic', 'senior'] },
+  { name: 'Kokura', jp: '小倉', ramen: '—', type: 'Wisdom Bowl', stat: 'Speed/Guts/Wisdom', color: 'cyan', icon: 'fa-brain', costs: [1, 3, 1], jc: '50%→60% Friendship Bonus for Wisdom Training<br>Activates Hint Event 2× from random Wisdom Support Card', sr: '40%→50% Friendship Bonus for SGW Training<br>50%→60% Training Bonus to Skill Pt for SGW<br>1 random additional copy in each of SGW training (if 4+ types)', years: ['classic', 'senior'] }
 ];
 
 const regionGrid = document.getElementById('region-grid');
@@ -1291,10 +957,7 @@ function renderRegions(filter = 'all') {
     card.innerHTML = `
       <div class="flex items-start justify-between mb-4">
         <div>
-          <div class="flex items-center gap-2 mb-1">
-            <i class="fas ${r.icon}" style="color:var(--flame)"></i>
-            <h4 class="font-display text-xl" style="color:var(--ink)">${r.name}</h4>
-          </div>
+          <div class="flex items-center gap-2 mb-1"><i class="fas ${r.icon}" style="color:var(--flame)"></i><h4 class="font-display text-xl" style="color:var(--ink)">${r.name}</h4></div>
           <div class="text-xs font-bold" style="color:var(--ink-soft)">${r.jp} · ${r.type}</div>
         </div>
         <span class="chip" style="background:rgba(255,255,255,.5);color:var(--ink)">${yearLabels}</span>
@@ -1344,34 +1007,10 @@ document.querySelectorAll('[data-year]').forEach(btn => {
 
 // ===== Strategy Guide Timeline Data =====
 const guideSteps = [
-  {
-    phase: 'Junior Year', icon: 'fa-seedling', color: 'green',
-    title: 'Building the Base',
-    action: 'Select 3 regions from Sapporo, Hakodate, Niigata, Fukushima, Tokyo.',
-    reason: 'These regions offer 20-30% Training Bonuses for specific stats. Focus on your character\'s primary stats (e.g., Speed: Sapporo, Stamina: Hakodate). This early boost is crucial for hitting base stat caps before Limit Breaks.',
-    tip: 'Accumulate Learning Gauge by training consistently. Hit the 1500 Pt quota for 1st RMJ (大盛況).'
-  },
-  {
-    phase: 'Classic Year', icon: 'fa-leaf', color: 'orange',
-    title: 'Multi-Stat Synergy',
-    action: 'Select 3 regions from Nakayama, Chukyo, Kyoto, Hanshin, Kokura.',
-    reason: 'Classic regions provide 50-60% Friendship Bonuses across multiple stats (e.g., Kyoto boosts Stamina & Guts). Use these to cover weaknesses and prepare for Tasting Party unlocks.',
-    tip: 'Tasting Party now grants +20 Base Stats Limit Break and +20 Skill Pt Limit Break. Use Secret Ingredients wisely.'
-  },
-  {
-    phase: 'Senior Year', icon: 'fa-tree', color: 'pink',
-    title: 'Skill Points & URA Prep',
-    action: 'Select 3 from all 10 regions. Nakayama (Speed/Power/Wisdom) is highly recommended.',
-    reason: 'Senior regions provide massive 50-60% Training Bonuses towards Skill Pt and duplicate Support Cards. This is your last chance to farm rare skill hints and max out stats before URA Finals.',
-    tip: 'Hit the 5000 Pt quota for Super RMJ EX (超盛況) to unlock the Ultimate Ramen.'
-  },
-  {
-    phase: 'Super RMJ EX', icon: 'fa-crown', color: 'flame',
-    title: 'The Ultimate Ramen',
-    action: 'Choose 1 of 3 Ultimate Ramen. Base Tasting Party effects are disabled.',
-    reason: 'Special (Top) is generally the best: +20 Energy, 100% Race Bonus, 150% Friendship Bonus, and huge stat limit breaks. Choose Yokubari (Middle) or Shugyoku (Bottom) only if you desperately need specific stat limit breaks (Power vs Guts) for URA Finals.',
-    tip: 'The chosen Ultimate Ramen dictates your URA Finals playstyle.'
-  }
+  { phase: 'Junior Year', icon: 'fa-seedling', color: 'green', title: 'Building the Base', action: 'Select 3 regions from Sapporo, Hakodate, Niigata, Fukushima, Tokyo.', reason: 'These regions offer 20-30% Training Bonuses for specific stats. Focus on your character\'s primary stats (e.g., Speed: Sapporo, Stamina: Hakodate). This early boost is crucial for hitting base stat caps before Limit Breaks.', tip: 'Accumulate Learning Gauge by training consistently. Hit the 1500 Pt quota for 1st RMJ (大盛況).' },
+  { phase: 'Classic Year', icon: 'fa-leaf', color: 'orange', title: 'Multi-Stat Synergy', action: 'Select 3 regions from Nakayama, Chukyo, Kyoto, Hanshin, Kokura.', reason: 'Classic regions provide 50-60% Friendship Bonuses across multiple stats (e.g., Kyoto boosts Stamina & Guts). Use these to cover weaknesses and prepare for Tasting Party unlocks.', tip: 'Tasting Party now grants +20 Base Stats Limit Break and +20 Skill Pt Limit Break. Use Secret Ingredients wisely.' },
+  { phase: 'Senior Year', icon: 'fa-tree', color: 'pink', title: 'Skill Points & URA Prep', action: 'Select 3 from all 10 regions. Nakayama (Speed/Power/Wisdom) is highly recommended.', reason: 'Senior regions provide massive 50-60% Training Bonuses towards Skill Pt and duplicate Support Cards. This is your last chance to farm rare skill hints and max out stats before URA Finals.', tip: 'Hit the 5000 Pt quota for Super RMJ EX (超盛況) to unlock the Ultimate Ramen.' },
+  { phase: 'Super RMJ EX', icon: 'fa-crown', color: 'flame', title: 'The Ultimate Ramen', action: 'Choose 1 of 3 Ultimate Ramen. Base Tasting Party effects are disabled.', reason: 'Special (Top) is generally the best: +20 Energy, 100% Race Bonus, 150% Friendship Bonus, and huge stat limit breaks. Choose Yokubari (Middle) or Shugyoku (Bottom) only if you desperately need specific stat limit breaks (Power vs Guts) for URA Finals.', tip: 'The chosen Ultimate Ramen dictates your URA Finals playstyle.' }
 ];
 
 const timelineContainer = document.getElementById('timeline-container');
@@ -1403,33 +1042,9 @@ guideSteps.forEach(step => {
 
 // ===== Ultimate Ramen Data =====
 const ultimates = [
-  {
-    name: 'スペシャルトレセンラーメン', subtitle: 'Top Choice', tier: 'top',
-    crown: 'fa-crown', color: 'flame',
-    effects: [
-      '+20 Energy', '+1 Motivation', '100% Race Bonus', '150% Friendship Bonus',
-      '1 additional copy of each Support Card appears in random training',
-      'If 4+ Support Card types: 100% Training Bonus towards Skill Pt, +100 Skill Pt Limit Break',
-      '+100 Speed, Stamina, Guts, Wisdom Stats Limit Break'
-    ],
-    skill: '火事場のバ鹿力', skillBonus: '+2'
-  },
-  {
-    name: 'よくばりトレセンラーメン', subtitle: 'Middle Choice', tier: 'middle',
-    crown: 'fa-medal', color: 'orange',
-    effects: [
-      '+100 Speed, Stamina, Power, and Wisdom Stats Gain Limit Break'
-    ],
-    skill: 'いいとこ入った！', skillBonus: '+2'
-  },
-  {
-    name: '珠玉のトレセンラーメン', subtitle: 'Bottom Choice', tier: 'bottom',
-    crown: 'fa-gem', color: 'pink',
-    effects: [
-      '+100 Speed, Power, Guts, and Wisdom Stats Gain Limit Break'
-    ],
-    skill: '好奇心', skillBonus: '+2'
-  }
+  { name: 'スペシャルトレセンラーメン', subtitle: 'Top Choice', tier: 'top', crown: 'fa-crown', color: 'flame', effects: ['+20 Energy', '+1 Motivation', '100% Race Bonus', '150% Friendship Bonus', '1 additional copy of each Support Card appears in random training', 'If 4+ Support Card types: 100% Training Bonus towards Skill Pt, +100 Skill Pt Limit Break', '+100 Speed, Stamina, Guts, Wisdom Stats Limit Break'], skill: '火事場のバ鹿力', skillBonus: '+2' },
+  { name: 'よくばりトレセンラーメン', subtitle: 'Middle Choice', tier: 'middle', crown: 'fa-medal', color: 'orange', effects: ['+100 Speed, Stamina, Power, and Wisdom Stats Gain Limit Break'], skill: 'いいとこ入った！', skillBonus: '+2' },
+  { name: '珠玉のトレセンラーメン', subtitle: 'Bottom Choice', tier: 'bottom', crown: 'fa-gem', color: 'pink', effects: ['+100 Speed, Power, Guts, and Wisdom Stats Gain Limit Break'], skill: '好奇心', skillBonus: '+2' }
 ];
 
 const ultimateGrid = document.getElementById('ultimate-grid');
@@ -1454,23 +1069,60 @@ ultimates.forEach(u => {
   ultimateGrid.appendChild(card);
 });
 
-// ===== Active nav highlighting =====
-const navLinks = document.querySelectorAll('.nav-link');
-const sections = ['story', 'rules', 'regions', 'guide', 'mechanics', 'ultimate'];
-window.addEventListener('scroll', () => {
-  let active = '';
-  sections.forEach(id => {
-    const s = document.getElementById(id);
-    if (s && s.offsetTop - 120 <= window.scrollY) active = id;
-  });
-  navLinks.forEach(l => {
-    l.classList.toggle('active', l.getAttribute('href') === '#' + active);
-  });
+// ===== Video Gallery =====
+const videos = [
+  { id: 'x5b1xRG49jc', title: '[Uma Musume] New "Ramen Scenario" Guide: Training Flow, Key Mechanics & Essential Tips' },
+  { id: 'b1h2gssF0oQ', title: '[Trailer] They Started a Ramen Shop... and It Became a NATIONAL EVENT' },
+  { id: 'RC3HGBy8VBQ', title: '[Playthrough] NEW "TRESENKEN" SCENARIO GUIDE' },
+  { id: 'HonyAt867_A', title: '[Winning Live] Tracen Ramen Retsuden' }
+];
+
+const videoGrid = document.getElementById('video-grid');
+videos.forEach(v => {
+  const card = document.createElement('div');
+  card.className = 'video-card glass p-4';
+  card.onclick = () => openVideo(v.id, v.title);
+  card.innerHTML = `
+    <div class="thumb" style="height: 220px;">
+      <img src="https://img.youtube.com/vi/${v.id}/hqdefault.jpg" alt="${v.title}">
+      <div class="play-btn">
+        <div class="play-icon"><i class="fas fa-play"></i></div>
+      </div>
+    </div>
+    <h4 class="font-display text-base mt-4 mb-2" style="color:var(--ink)">${v.title}</h4>
+    <div class="flex items-center gap-2 text-xs" style="color:var(--ink-soft)">
+      <i class="fab fa-youtube text-red-500"></i>
+      <span>Click to watch</span>
+    </div>
+  `;
+  videoGrid.appendChild(card);
 });
+
+function openVideo(videoId, title) {
+  const modal = document.getElementById('video-modal');
+  const frame = document.getElementById('video-frame');
+  const titleEl = document.getElementById('modal-title');
+  
+  titleEl.textContent = title;
+  frame.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+  modal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeVideo(event) {
+  if (event && event.target.id !== 'video-modal' && event.target.closest('#video-wrapper')) return;
+  const modal = document.getElementById('video-modal');
+  const frame = document.getElementById('video-frame');
+  
+  modal.classList.remove('active');
+  frame.innerHTML = ''; // Stop video playback
+  document.body.style.overflow = 'auto';
+}
 
 // ===== Gauge Demo Animation =====
 setInterval(() => {
   const segs = document.querySelectorAll('#gauge-demo .gauge-segment');
+  if (segs.length === 0) return;
   const current = Array.from(segs).filter(s => s.classList.contains('filled')).length;
   const next = (current + 1) % 8;
   segs.forEach((s, i) => {
