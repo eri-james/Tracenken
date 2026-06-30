@@ -6,8 +6,8 @@
     <title>Tracen-ken Companion & Progression Guide</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Alpine.js -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Alpine.js (Stable 3.15.x) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.15.12/dist/cdn.min.js"></script>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
@@ -30,6 +30,11 @@
         body {
             background: radial-gradient(circle at top right, #fff4f2, #f5fcf0, #e0fbfd);
             overflow-x: hidden;
+        }
+
+        /* Prevent layout flashes before Alpine initializes */
+        [x-cloak] {
+            display: none !important;
         }
 
         /* Glassmorphism Styles */
@@ -88,7 +93,7 @@
         }
     </style>
 </head>
-<body class="text-slate-800 min-h-screen pb-24" x-data="companionApp()">
+<body class="text-slate-800 min-h-screen pb-24" x-data="companionApp">
 
     <!-- Warm Kitchen Steam Effect -->
     <div class="steam-container">
@@ -125,7 +130,7 @@
     <main class="relative z-10 max-w-md mx-auto px-4 mt-6">
 
         <!-- ================= TAB: STRATEGIC PROGRESSION GUIDE ================= -->
-        <div x-show="currentTab === 'guide'" x-transition:enter="transition ease-out duration-200" class="space-y-6">
+        <div x-cloak x-show="currentTab === 'guide'" x-transition:enter="transition ease-out duration-200" class="space-y-6">
             
             <!-- Strategic Core Concept -->
             <div class="glass-panel rounded-2xl p-5 relative overflow-hidden">
@@ -247,7 +252,7 @@
         </div>
 
         <!-- ================= TAB: COMPANION & SIMULATOR ================= -->
-        <div x-show="currentTab === 'tracker'" x-transition:enter="transition ease-out duration-200" class="space-y-6">
+        <div x-cloak x-show="currentTab === 'tracker'" x-transition:enter="transition ease-out duration-200" class="space-y-6">
             
             <!-- Learning Gauge Tracker -->
             <div class="glass-panel rounded-2xl p-5">
@@ -377,7 +382,7 @@
                 <!-- Select Region -->
                 <div class="mb-4">
                     <label class="block text-[11px] font-bold text-slate-600 mb-1">Region Selection</label>
-                    <select x-model="selectedRegionIndex" class="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                    <select x-model.number="selectedRegionIndex" class="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-500">
                         <template x-for="(region, index) in regions" :key="index">
                             <option :value="index" x-text="`${region.name} (${region.era})`"></option>
                         </template>
@@ -431,7 +436,7 @@
         </div>
 
         <!-- ================= TAB: DATA REFERENCE ================= -->
-        <div x-show="currentTab === 'data'" x-transition:enter="transition ease-out duration-200" class="space-y-6">
+        <div x-cloak x-show="currentTab === 'data'" x-transition:enter="transition ease-out duration-200" class="space-y-6">
             
             <!-- Link Characters Panel -->
             <div class="glass-panel rounded-2xl p-4">
@@ -548,8 +553,8 @@
 
     <!-- Interactive JS Controller -->
     <script>
-        function companionApp() {
-            return {
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('companionApp', () => ({
                 currentTab: 'guide',
                 
                 gauges: {
@@ -689,674 +694,8 @@
 
                     this.cookLog = `${this.regions[this.selectedRegionIndex].dish} has been served! Active bonus: ${this.regions[this.selectedRegionIndex].buff}`;
                 }
-            }
-        }
+            }));
+        });
     </script>
 </body>
-</html>            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 8px 32px 0 rgba(139, 92, 26, 0.05);
-        }
-
-        /* Responsive 3D Button Press */
-        .btn-3d {
-            transition: all 0.08s ease;
-            box-shadow: 0 4px 0 0 rgba(234, 88, 12, 0.3);
-        }
-        .btn-3d:active {
-            transform: translateY(3px);
-            box-shadow: 0 1px 0 0 rgba(234, 88, 12, 0.3);
-        }
-
-        /* Steam Particle Animations */
-        .steam-container {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-            z-index: 0;
-        }
-        .steam-particle {
-            position: absolute;
-            bottom: -60px;
-            background: linear-gradient(0deg, rgba(249, 115, 22, 0.08) 0%, rgba(249, 115, 22, 0) 100%);
-            border-radius: 50%;
-            filter: blur(6px);
-            animation: floatUp 14s infinite ease-in-out;
-        }
-
-        @keyframes floatUp {
-            0% {
-                transform: translateY(0) scale(0.6) translateX(0);
-                opacity: 0;
-            }
-            15% {
-                opacity: 0.5;
-            }
-            85% {
-                opacity: 0.15;
-            }
-            100% {
-                transform: translateY(-115vh) scale(1.5) translateX(var(--drift, 40px));
-                opacity: 0;
-            }
-        }
-    </style>
-</head>
-<body class="text-slate-800 min-h-screen pb-24" x-data="companionApp()">
-
-    <!-- Warm Kitchen Steam Effect -->
-    <div class="steam-container">
-        <div class="steam-particle" style="left: 15%; width: 90px; height: 180px; animation-delay: 0s; --drift: 60px;"></div>
-        <div class="steam-particle" style="left: 45%; width: 110px; height: 230px; animation-delay: 3.5s; --drift: -50px;"></div>
-        <div class="steam-particle" style="left: 75%; width: 80px; height: 160px; animation-delay: 1.8s; --drift: 40px;"></div>
-    </div>
-
-    <!-- Top App Header -->
-    <header class="relative z-10 max-w-md mx-auto pt-8 px-4 text-center">
-        <div class="inline-block bg-gradient-to-r from-orange-500 to-amber-500 text-white px-4 py-1 rounded-full text-xs font-bold tracking-wider uppercase shadow-sm mb-2">
-            🍜 Tracen-ken Ramen Academy
-        </div>
-        <h1 class="font-display text-3xl font-extrabold text-slate-800 tracking-tight leading-none drop-shadow-sm">
-            Scenario Companion
-        </h1>
-        <p class="text-xs text-slate-500 font-semibold mt-1.5">らっしゃい！トレセン軒！ ~The Retribution of Kindness~</p>
-
-        <!-- Dynamic Navigation Tabs -->
-        <div class="flex justify-center gap-1 mt-6 p-1 glass-panel rounded-2xl max-w-sm mx-auto">
-            <button @click="currentTab = 'guide'" :class="currentTab === 'guide' ? 'bg-orange-500 text-white shadow-sm' : 'text-slate-600 hover:bg-white/40'" class="flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5">
-                <i class="fa-solid fa-map-location-dot"></i> Guide
-            </button>
-            <button @click="currentTab = 'tracker'" :class="currentTab === 'tracker' ? 'bg-orange-500 text-white shadow-sm' : 'text-slate-600 hover:bg-white/40'" class="flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5">
-                <i class="fa-solid fa-utensils"></i> Companion
-            </button>
-            <button @click="currentTab = 'data'" :class="currentTab === 'data' ? 'bg-orange-500 text-white shadow-sm' : 'text-slate-600 hover:bg-white/40'" class="flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5">
-                <i class="fa-solid fa-book"></i> Database
-            </button>
-        </div>
-    </header>
-
-    <!-- Main App Container -->
-    <main class="relative z-10 max-w-md mx-auto px-4 mt-6">
-
-        <!-- ================= TAB: STRATEGIC PROGRESSION GUIDE ================= -->
-        <div x-show="currentTab === 'guide'" x-transition:enter="transition ease-out duration-200" class="space-y-6">
-            
-            <!-- Strategic Core Concept -->
-            <div class="glass-panel rounded-2xl p-5 relative overflow-hidden">
-                <div class="absolute -right-6 -bottom-6 text-7xl opacity-5 rotate-12">🍜</div>
-                <h3 class="font-display text-lg font-bold text-orange-600 mb-2">The F2P Success Formula</h3>
-                <p class="text-xs text-slate-600 leading-relaxed">
-                    This scenario focuses heavily on coordinating your <strong>Tasting Parties</strong> with your major training turns. Because F2P players often struggle with low support card raw training values, using the correct regional buffs at high-stack moments is critical to breaking your training caps.
-                </p>
-            </div>
-
-            <!-- F2P Borrow Alert -->
-            <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex gap-3.5 items-start">
-                <div class="bg-emerald-500 text-white rounded-full p-2 h-8 w-8 flex items-center justify-center font-bold text-sm shrink-0 shadow-sm">
-                    💡
-                </div>
-                <div>
-                    <h4 class="font-bold text-xs text-emerald-800 uppercase tracking-wider">Top Rental Priority</h4>
-                    <p class="text-xs text-emerald-700 leading-relaxed mt-1">
-                        Always borrow <strong>SSR Tazuna Hayakawa [一杯のノスタルジア]</strong>. She raises your default Learning Gauge gain per turn from 3 to 10, hands out two free Secret Ingredients during date interactions, and maxes out your gauge every turn during Summer Camp.
-                    </p>
-                </div>
-            </div>
-
-            <!-- Detailed Step-by-Step Progression -->
-            <div class="space-y-5">
-                <h3 class="font-display text-lg font-bold text-slate-800 flex items-center gap-2 px-1">
-                    <i class="fa-solid fa-route text-orange-500"></i> Step-by-Step Walkthrough
-                </h3>
-
-                <!-- Step 1: Junior Setup -->
-                <div class="glass-panel rounded-2xl p-5 border-l-4 border-l-cyan-400">
-                    <div class="flex justify-between items-center mb-3">
-                        <span class="text-[10px] font-bold uppercase tracking-widest text-cyan-600 bg-cyan-50 px-2.5 py-0.5 rounded-full">Phase 1: Junior Era</span>
-                        <span class="text-xs text-slate-400 font-bold">Turns 1 - 11</span>
-                    </div>
-                    <h4 class="font-display font-bold text-slate-800 text-sm mb-2">Setup, Gauges & Early Region Choice</h4>
-                    
-                    <div class="space-y-2 text-xs text-slate-600 leading-relaxed">
-                        <div class="p-2 bg-white/50 rounded-lg">
-                            <strong>🎯 Region Selection (Turn 3):</strong> 
-                            Choose <span class="font-bold text-slate-800">Sapporo, Tokyo, and Hakodate</span>.
-                            <p class="text-[11px] text-slate-500 mt-0.5">
-                                <em>Reason:</em> Sapporo gives Speed Training bonuses, Tokyo boosts Wisdom training, and Hakodate provides Stamina support. This aligns perfectly with common F2P Speed/Wisdom training decks.
-                            </p>
-                        </div>
-                        <div class="p-2 bg-white/50 rounded-lg">
-                            <strong>📈 Gameplan:</strong>
-                            Build your support card relationships early. Avoid using Tricks for Tasting Parties immediately; save them until you have 3 or more support cards grouped on a single highly-boosted stat track.
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Step 2: Classic Era -->
-                <div class="glass-panel rounded-2xl p-5 border-l-4 border-l-orange-400">
-                    <div class="flex justify-between items-center mb-3">
-                        <span class="text-[10px] font-bold uppercase tracking-widest text-orange-600 bg-orange-50 px-2.5 py-0.5 rounded-full">Phase 2: Classic Era</span>
-                        <span class="text-xs text-slate-400 font-bold">Turns 12 - 35</span>
-                    </div>
-                    <h4 class="font-display font-bold text-slate-800 text-sm mb-2">Friendship Training & Summer Camp Setup</h4>
-
-                    <div class="space-y-2 text-xs text-slate-600 leading-relaxed">
-                        <div class="p-2 bg-white/50 rounded-lg">
-                            <strong>🎯 Region Selection (After 1st RMJ):</strong> 
-                            Choose <span class="font-bold text-slate-800">Kyoto, Hanshin, and Nakayama</span>.
-                            <p class="text-[11px] text-slate-500 mt-0.5">
-                                <em>Reason:</em> Kyoto and Hanshin unlock dual-stat Friendship bonuses in Classic. These stack with your support cards once they trigger rainbow training, allowing F2P decks to hit massive stat gains.
-                            </p>
-                        </div>
-                        <div class="p-2 bg-white/50 rounded-lg">
-                            <strong>🏖️ Summer Camp Prep (June, Turn 1):</strong>
-                            Stop triggering Tasting Parties in May. Bank up to 4 or 5 Tricks. When Summer Camp begins, the Tazuna card automatically maxes out your Learning Gauge every turn. Cook every turn of camp to keep the camp multiplier active constantly.
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Step 3: Senior Year -->
-                <div class="glass-panel rounded-2xl p-5 border-l-4 border-l-rose-400">
-                    <div class="flex justify-between items-center mb-3">
-                        <span class="text-[10px] font-bold uppercase tracking-widest text-rose-600 bg-rose-50 px-2.5 py-0.5 rounded-full">Phase 3: Senior Era</span>
-                        <span class="text-xs text-slate-400 font-bold">Turns 36 - 47</span>
-                    </div>
-                    <h4 class="font-display font-bold text-slate-800 text-sm mb-2">Maxing Caps & Excitement Accumulation</h4>
-
-                    <div class="space-y-2 text-xs text-slate-600 leading-relaxed">
-                        <div class="p-2 bg-white/50 rounded-lg">
-                            <strong>🎯 Region Selection (After 2nd RMJ):</strong> 
-                            Re-select <span class="font-bold text-slate-800">Sapporo, Tokyo</span>, and a third region of your choice.
-                            <p class="text-[11px] text-slate-500 mt-0.5">
-                                <em>Reason:</em> During Senior year, single-stat regions receive massive enhancements. Sapporo now boosts Friendship Speed bonuses and activates an extra copy of Speed Support Cards in training, helping you reach the 2150 Speed cap.
-                            </p>
-                        </div>
-                        <div class="p-2 bg-white/50 rounded-lg">
-                            <strong>🔥 Jamboree Goal:</strong>
-                            Ensure you earn enough Excitement Points before December to comfortably surpass the 3500 or 5000 point milestones. This secures the prestigious Super RMJ EX evaluation and applies massive permanent training buffs.
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Step 4: URA Finals -->
-                <div class="glass-panel rounded-2xl p-5 border-l-4 border-l-amber-500 bg-amber-50/40">
-                    <div class="flex justify-between items-center mb-3">
-                        <span class="text-[10px] font-bold uppercase tracking-widest text-amber-700 bg-amber-100/50 px-2.5 py-0.5 rounded-full">Final Phase: URA Finals</span>
-                        <span class="text-xs text-slate-400 font-bold">URA Weeks</span>
-                    </div>
-                    <h4 class="font-display font-bold text-slate-800 text-sm mb-2">Choosing Your Ultimate Ramen</h4>
-
-                    <div class="space-y-2 text-xs text-slate-600 leading-relaxed">
-                        <div class="p-2.5 bg-white rounded-xl border border-amber-200">
-                            <strong>🍜 Choose based on your stat requirements:</strong>
-                            <ul class="list-disc pl-4 mt-1.5 space-y-1 text-[11px]">
-                                <li><strong>Top (Special) Ramen:</strong> Best for Stamina/Guts builds. Grants massive cap limit breaks (+100) and the "火事場のバ鹿力" rare skill hint.</li>
-                                <li><strong>Middle (Yokubari) Ramen:</strong> Best for standard Speed/Power builds. Grants Speed, Stamina, Power, and Wisdom limit breaks (+100) and the "いいとこ入った！" rare skill hint.</li>
-                                <li><strong>Bottom (Shugoku) Ramen:</strong> Best for Speed/Power/Guts/Wisdom builds. Grants Speed, Power, Guts, and Wisdom limit breaks (+100) and the "好奇心" rare skill hint.</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ================= TAB: COMPANION & SIMULATOR ================= -->
-        <div x-show="currentTab === 'tracker'" x-transition:enter="transition ease-out duration-200" class="space-y-6">
-            
-            <!-- Learning Gauge Tracker -->
-            <div class="glass-panel rounded-2xl p-5">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-display text-md font-bold text-slate-800 flex items-center gap-2">
-                        <i class="fa-solid fa-scale-balanced text-cyan-500"></i> Learning Gauges
-                    </h3>
-                    <button @click="resetGauges()" class="text-xs text-rose-500 font-bold hover:underline transition-all">Clear All</button>
-                </div>
-
-                <div class="space-y-3.5">
-                    <!-- Noodle -->
-                    <div>
-                        <div class="flex justify-between text-xs font-bold mb-1">
-                            <span class="text-amber-700 flex items-center gap-1">🌾 Noodle Gauge</span>
-                            <span class="text-slate-500" x-text="`${gauges.noodle}/7`"></span>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <div class="flex-1 bg-slate-200 h-2.5 rounded-full overflow-hidden">
-                                <div class="bg-gradient-to-r from-amber-400 to-amber-500 h-full transition-all duration-300" :style="`width: ${(gauges.noodle/7)*100}%`"></div>
-                            </div>
-                            <button @click="addGauge('noodle')" class="btn-3d bg-amber-500 hover:bg-amber-600 text-white rounded-lg px-3 py-1 text-xs font-bold shrink-0">+1</button>
-                        </div>
-                    </div>
-
-                    <!-- Soup -->
-                    <div>
-                        <div class="flex justify-between text-xs font-bold mb-1">
-                            <span class="text-amber-900 flex items-center gap-1">🥣 Soup Gauge</span>
-                            <span class="text-slate-500" x-text="`${gauges.soup}/7`"></span>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <div class="flex-1 bg-slate-200 h-2.5 rounded-full overflow-hidden">
-                                <div class="bg-gradient-to-r from-amber-700 to-amber-800 h-full transition-all duration-300" :style="`width: ${(gauges.soup/7)*100}%`"></div>
-                            </div>
-                            <button @click="addGauge('soup')" class="btn-3d bg-amber-800 hover:bg-amber-900 text-white rounded-lg px-3 py-1 text-xs font-bold shrink-0">+1</button>
-                        </div>
-                    </div>
-
-                    <!-- Toppings -->
-                    <div>
-                        <div class="flex justify-between text-xs font-bold mb-1">
-                            <span class="text-rose-700 flex items-center gap-1">🍥 Toppings Gauge</span>
-                            <span class="text-slate-500" x-text="`${gauges.topping}/7`"></span>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <div class="flex-1 bg-slate-200 h-2.5 rounded-full overflow-hidden">
-                                <div class="bg-gradient-to-r from-rose-400 to-rose-500 h-full transition-all duration-300" :style="`width: ${(gauges.topping/7)*100}%`"></div>
-                            </div>
-                            <button @click="addGauge('topping')" class="btn-3d bg-rose-500 hover:bg-rose-600 text-white rounded-lg px-3 py-1 text-xs font-bold shrink-0">+1</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Trick & Secret Ingredient Inventory -->
-            <div class="glass-panel rounded-2xl p-5">
-                <h3 class="font-display text-md font-bold text-slate-800 mb-3 flex items-center gap-2">
-                    <i class="fa-solid fa-boxes-stacked text-orange-500"></i> Tricks Inventory
-                </h3>
-
-                <!-- Tricks Inventory Grid -->
-                <div class="grid grid-cols-3 gap-3 mb-4">
-                    <div class="bg-amber-50/50 p-2.5 rounded-xl border border-amber-200/40 text-center">
-                        <span class="text-lg block mb-0.5">🌾</span>
-                        <div class="text-[10px] font-bold text-amber-800 uppercase tracking-wider">Noodle Tricks</div>
-                        <div class="flex justify-center items-center gap-2 mt-1.5">
-                            <button @click="adjustTrick('noodle', -1)" class="w-5 h-5 bg-white border border-amber-300 rounded text-xs font-bold flex items-center justify-center">-</button>
-                            <span class="text-xs font-extrabold text-slate-800" x-text="tricks.noodle"></span>
-                            <button @click="adjustTrick('noodle', 1)" class="w-5 h-5 bg-white border border-amber-300 rounded text-xs font-bold flex items-center justify-center">+</button>
-                        </div>
-                    </div>
-
-                    <div class="bg-amber-100/20 p-2.5 rounded-xl border border-amber-300/20 text-center">
-                        <span class="text-lg block mb-0.5">🥣</span>
-                        <div class="text-[10px] font-bold text-amber-900 uppercase tracking-wider">Soup Tricks</div>
-                        <div class="flex justify-center items-center gap-2 mt-1.5">
-                            <button @click="adjustTrick('soup', -1)" class="w-5 h-5 bg-white border border-amber-300 rounded text-xs font-bold flex items-center justify-center">-</button>
-                            <span class="text-xs font-extrabold text-slate-800" x-text="tricks.soup"></span>
-                            <button @click="adjustTrick('soup', 1)" class="w-5 h-5 bg-white border border-amber-300 rounded text-xs font-bold flex items-center justify-center">+</button>
-                        </div>
-                    </div>
-
-                    <div class="bg-rose-50/50 p-2.5 rounded-xl border border-rose-200/40 text-center">
-                        <span class="text-lg block mb-0.5">🍥</span>
-                        <div class="text-[10px] font-bold text-rose-800 uppercase tracking-wider">Topping Tricks</div>
-                        <div class="flex justify-center items-center gap-2 mt-1.5">
-                            <button @click="adjustTrick('topping', -1)" class="w-5 h-5 bg-white border border-rose-300 rounded text-xs font-bold flex items-center justify-center">-</button>
-                            <span class="text-xs font-extrabold text-slate-800" x-text="tricks.topping"></span>
-                            <button @click="adjustTrick('topping', 1)" class="w-5 h-5 bg-white border border-rose-300 rounded text-xs font-bold flex items-center justify-center">+</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex justify-between text-[11px] font-bold text-slate-500 px-1 mb-4">
-                    <span>Total Tricks: <span :class="getTotalTricks() > 10 ? 'text-rose-500' : 'text-slate-700'" x-text="`${getTotalTricks()}/10`"></span></span>
-                    <span class="italic text-slate-400">Oldest discards automatically at 10+</span>
-                </div>
-
-                <!-- Secret Ingredients (Wildcards) -->
-                <div class="bg-gradient-to-r from-orange-500/10 to-amber-500/10 border border-orange-500/20 rounded-xl p-4">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-xs font-bold text-orange-600 flex items-center gap-1">
-                            ✨ Secret Wildcards
-                        </span>
-                        <span class="text-xs font-extrabold text-orange-600" x-text="`${secretIngredients}/4`"></span>
-                    </div>
-                    <div class="flex gap-2">
-                        <template x-for="i in 4">
-                            <button @click="toggleSecretIngredient(i)" :class="secretIngredients >= i ? 'bg-gradient-to-br from-orange-500 to-amber-500 text-white border-transparent shadow-sm' : 'bg-white/80 border-slate-300 text-slate-300'" class="flex-1 py-1.5 border rounded-lg text-xs font-bold transition-all">
-                                <i class="fa-solid fa-star text-[10px]"></i>
-                            </button>
-                        </template>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Cooking Simulator -->
-            <div class="glass-panel rounded-2xl p-5 border border-orange-500/20">
-                <h3 class="font-display text-md font-bold text-slate-800 mb-2 flex items-center gap-2">
-                    <i class="fa-solid fa-fire text-orange-500"></i> Tasting Party Simulator
-                </h3>
-                <p class="text-xs text-slate-500 mb-4 leading-relaxed">
-                    Verify ingredient requirements and simulate cooking your regional recipes.
-                </p>
-
-                <!-- Select Region -->
-                <div class="mb-4">
-                    <label class="block text-[11px] font-bold text-slate-600 mb-1">Region Selection</label>
-                    <select x-model="selectedRegionIndex" class="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-500">
-                        <template x-for="(region, index) in regions" :key="index">
-                            <option :value="index" x-text="`${region.name} (${region.era})`"></option>
-                        </template>
-                    </select>
-                </div>
-
-                <!-- Display Recipe Requirements -->
-                <div class="bg-slate-50 rounded-xl p-3 mb-4">
-                    <div class="flex justify-between items-center mb-2 pb-2 border-b border-slate-200">
-                        <span class="text-xs font-bold text-slate-700">Dish: <span class="text-orange-600" x-text="regions[selectedRegionIndex].dish"></span></span>
-                        <span class="text-[10px] font-bold text-slate-400">Required Ingredients</span>
-                    </div>
-                    <div class="grid grid-cols-3 gap-2 text-center text-xs font-bold">
-                        <div class="bg-amber-50 rounded-lg p-1.5 border border-amber-200/40">
-                            🌾 <span x-text="regions[selectedRegionIndex].cost.noodle"></span> Noodle
-                        </div>
-                        <div class="bg-amber-100/30 rounded-lg p-1.5 border border-amber-300/20">
-                            🥣 <span x-text="regions[selectedRegionIndex].cost.soup"></span> Soup
-                        </div>
-                        <div class="bg-rose-50 rounded-lg p-1.5 border border-rose-200/40">
-                            🍥 <span x-text="regions[selectedRegionIndex].cost.topping"></span> Topping
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Live Validation Feedback -->
-                <div class="rounded-xl p-3 mb-4 text-xs font-semibold" :class="canCookResult().possible ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-rose-50 text-rose-800 border border-rose-200'">
-                    <div class="flex items-center gap-1.5">
-                        <i :class="canCookResult().possible ? 'fa-solid fa-circle-check text-emerald-500' : 'fa-solid fa-circle-xmark text-rose-500'"></i>
-                        <span x-text="canCookResult().message"></span>
-                    </div>
-                    <template x-if="canCookResult().possible && canCookResult().secretsNeeded > 0">
-                        <p class="text-[10px] text-emerald-700 mt-1" x-text="`Uses ${canCookResult().secretsNeeded} Secret wildcard(s).`"></p>
-                    </template>
-                </div>
-
-                <!-- Action Button -->
-                <button @click="cookRamen()" class="btn-3d w-full py-3 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-display font-extrabold rounded-xl shadow-md flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-bowl-food"></i> Cook Tasting Party Ramen
-                </button>
-
-                <!-- Feedback Log -->
-                <template x-if="cookLog">
-                    <div class="bg-slate-800 text-slate-100 rounded-xl p-3.5 mt-4 text-xs space-y-1 relative animate-fade-in">
-                        <button @click="cookLog = null" class="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark"></i></button>
-                        <div class="font-bold text-amber-400">✨ Tasting Party Buffs Activated:</div>
-                        <p class="text-[11px] leading-relaxed text-slate-300" x-text="cookLog"></p>
-                    </div>
-                </template>
-            </div>
-        </div>
-
-        <!-- ================= TAB: DATA REFERENCE ================= -->
-        <div x-show="currentTab === 'data'" x-transition:enter="transition ease-out duration-200" class="space-y-6">
-            
-            <!-- Link Characters Panel -->
-            <div class="glass-panel rounded-2xl p-4">
-                <h3 class="font-display text-md font-bold text-slate-800 mb-3 flex items-center gap-2">
-                    <i class="fa-solid fa-users text-cyan-500"></i> Scenario Link Characters
-                </h3>
-                <div class="space-y-3">
-                    <template x-for="char in linkCharacters">
-                        <div class="border-b border-slate-200/60 pb-3 last:border-none last:pb-0">
-                            <div class="flex justify-between items-center mb-1">
-                                <span class="font-bold text-xs text-slate-800" x-text="char.name"></span>
-                                <span class="text-[9px] bg-cyan-50 text-cyan-700 px-2 py-0.5 rounded-full font-bold" x-text="char.type"></span>
-                            </div>
-                            <p class="text-[11px] text-slate-600 leading-relaxed" x-html="char.effect"></p>
-                        </div>
-                    </template>
-                </div>
-            </div>
-
-            <!-- Stat Caps Table -->
-            <div class="glass-panel rounded-2xl p-4">
-                <h3 class="font-display text-md font-bold text-slate-800 mb-3 flex items-center gap-2">
-                    <i class="fa-solid fa-chart-line text-emerald-500"></i> Scenario Stat Caps
-                </h3>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs">
-                        <thead>
-                            <tr class="bg-slate-100 text-slate-600 font-bold">
-                                <th class="p-2 rounded-l-lg">Stat</th>
-                                <th class="p-2">Limit Break</th>
-                                <th class="p-2">Scenario Cap</th>
-                                <th class="p-2 rounded-r-lg">Hard Cap</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="border-b border-slate-100">
-                                <td class="p-2 font-bold flex items-center gap-1">🔵 Speed</td>
-                                <td class="p-2 text-amber-600 font-semibold">+950</td>
-                                <td class="p-2 font-bold text-slate-700">2150</td>
-                                <td class="p-2 text-slate-400">2500</td>
-                            </tr>
-                            <tr class="border-b border-slate-100">
-                                <td class="p-2 font-bold flex items-center gap-1">❤️ Stamina</td>
-                                <td class="p-2 text-amber-600 font-semibold">+600</td>
-                                <td class="p-2 font-bold text-slate-700">1800</td>
-                                <td class="p-2 text-slate-400">2500</td>
-                            </tr>
-                            <tr class="border-b border-slate-100">
-                                <td class="p-2 font-bold flex items-center gap-1">💪 Power</td>
-                                <td class="p-2 text-amber-600 font-semibold">+500</td>
-                                <td class="p-2 font-bold text-slate-700">1700</td>
-                                <td class="p-2 text-slate-400">2500</td>
-                            </tr>
-                            <tr class="border-b border-slate-100">
-                                <td class="p-2 font-bold flex items-center gap-1">🔥 Guts</td>
-                                <td class="p-2 text-amber-600 font-semibold">+500</td>
-                                <td class="p-2 font-bold text-slate-700">1700</td>
-                                <td class="p-2 text-slate-400">2500</td>
-                            </tr>
-                            <tr>
-                                <td class="p-2 font-bold flex items-center gap-1">🎓 Wisdom</td>
-                                <td class="p-2 text-amber-600 font-semibold">+600</td>
-                                <td class="p-2 font-bold text-slate-700">1800</td>
-                                <td class="p-2 text-slate-400">2500</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Skill Evolution Database -->
-            <div class="glass-panel rounded-2xl p-4">
-                <h3 class="font-display text-md font-bold text-slate-800 mb-1 flex items-center gap-2">
-                    <i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i> Skill Evolution
-                </h3>
-                <p class="text-[10px] text-slate-500 mb-3 leading-normal">
-                    You can evolve up to 2 skills into special scenario-specific variants.
-                </p>
-                <div class="space-y-3">
-                    <div class="bg-amber-50/50 p-2.5 rounded-xl border border-amber-100">
-                        <div class="flex items-center justify-between font-bold text-xs mb-1">
-                            <span class="text-slate-700">Gear Change</span>
-                            <span class="text-amber-700">→ Secret Taste Change!</span>
-                        </div>
-                        <p class="text-[10px] text-slate-600 leading-normal">
-                            <strong>&lt;Mile&gt;</strong> • Speed increases by 0.45 for 2.4s if front-running during the middle leg.
-                        </p>
-                    </div>
-
-                    <div class="bg-rose-50/50 p-2.5 rounded-xl border border-rose-100">
-                        <div class="flex items-center justify-between font-bold text-xs mb-1">
-                            <span class="text-slate-700">Excuse Me!</span>
-                            <span class="text-rose-700">→ Barikata, Up!</span>
-                        </div>
-                        <p class="text-[10px] text-slate-600 leading-normal">
-                            Speed increases by 0.45 for 3s if an opponent has been right behind you for a while.
-                        </p>
-                    </div>
-
-                    <div class="bg-cyan-50/50 p-2.5 rounded-xl border border-cyan-100">
-                        <div class="flex items-center justify-between font-bold text-xs mb-1">
-                            <span class="text-slate-700">Splendid Wit</span>
-                            <span class="text-cyan-700">→ Soup Strainer Mastery</span>
-                        </div>
-                        <p class="text-[10px] text-slate-600 leading-normal">
-                            Speed increases by 0.45 for 1.8s during middle leg. In Medium races, if all stats exceed 1000, current speed increases by 0.55 instead.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </main>
-
-    <!-- Interactive JS Controller -->
-    <script>
-        function companionApp() {
-            return {
-                currentTab: 'guide',
-                
-                gauges: {
-                    noodle: 0,
-                    soup: 0,
-                    topping: 0
-                },
-                tricks: {
-                    noodle: 0,
-                    soup: 0,
-                    topping: 0
-                },
-                secretIngredients: 0,
-                
-                cookLog: null,
-                selectedRegionIndex: 0,
-                trickQueue: [],
-
-                // Static Database Information (Free of bracket citations)
-                regions: [
-                    { name: "Sapporo (札幌)", era: "Junior/Senior", dish: "Thick Miso Ramen", cost: { noodle: 2, soup: 2, topping: 1 }, buff: "Junior: 20% to 30% Speed Training Bonus. Senior: 50% to 60% Speed Friendship Bonus." },
-                    { name: "Hakodate (函館)", era: "Junior/Senior", dish: "Clear Salt Ramen", cost: { noodle: 1, soup: 2, topping: 2 }, buff: "Junior: 20% to 30% Stamina Training Bonus. Senior: 60% to 70% Stamina Friendship Bonus." },
-                    { name: "Niigata (新潟)", era: "Junior/Senior", dish: "Laver Backfat Ramen", cost: { noodle: 3, soup: 1, topping: 1 }, buff: "Junior: 20% to 30% Power Training Bonus. Senior: 60% to 70% Power Friendship Bonus." },
-                    { name: "Fukushima (福島)", era: "Junior/Senior", dish: "Light Soy Sauce Ramen", cost: { noodle: 2, soup: 3, topping: 0 }, buff: "Junior: 20% to 30% Guts Training Bonus. Senior: 60% to 70% Guts Friendship Bonus." },
-                    { name: "Tokyo (東京)", era: "Junior/Senior", dish: "Heavy Pork Ramen", cost: { noodle: 1, soup: 1, topping: 3 }, buff: "Junior: 20% to 30% Wisdom Training Bonus. Senior: 60% to 70% Wisdom Friendship Bonus." },
-                    { name: "Kyoto (京都)", era: "Classic/Senior", dish: "Backfat Onion Ramen", cost: { noodle: 0, soup: 3, topping: 2 }, buff: "Classic: 50% to 60% Stamina/Guts Friendship. Senior: 40% to 50% Speed/Stamina/Wisdom Friendship." },
-                    { name: "Hanshin (阪神)", era: "Classic/Senior", dish: "Sweet Soy Sauce Ramen", cost: { noodle: 2, soup: 1, topping: 2 }, buff: "Classic: 50% to 60% Stamina/Power Friendship. Senior: 40% to 50% Speed/Stamina/Power Friendship." }
-                ],
-
-                linkCharacters: [
-                    { name: "Fine Motion", type: "Training Boost", effect: "Changes the obtainable Skill Hint in the event from Seniority Straight to Vanguard Swift." },
-                    { name: "Meisho Doto", type: "Training Boost", effect: "Changes the obtainable Skill Hint in the event from Unyielding Soul to Never Give Up." },
-                    { name: "Nice Nature", type: "Training Boost", effect: "Changes the obtainable Skill Hint in the event from Medium-Distance Straight to Ray of Brilliance." },
-                    { name: "Tazuna Hayakawa", type: "Friend Card Anchor", effect: "Increases standard Learning Gauge gain, grants 2 Secret Ingredients during dating, and maxes your gauge every turn of Summer Camp." }
-                ],
-
-                // Controller Core Logic
-                addGauge(type) {
-                    this.gauges[type]++;
-                    if (this.gauges[type] >= 7) {
-                        this.gauges[type] = 0;
-                        this.addTrick(type);
-                    }
-                },
-
-                addTrick(type) {
-                    if (this.getTotalTricks() >= 10) {
-                        const oldest = this.trickQueue.shift();
-                        if (oldest && this.tricks[oldest] > 0) {
-                            this.tricks[oldest]--;
-                        }
-                    }
-                    this.tricks[type]++;
-                    this.trickQueue.push(type);
-                },
-
-                adjustTrick(type, amount) {
-                    if (amount > 0) {
-                        if (this.getTotalTricks() < 10) {
-                            this.tricks[type]++;
-                            this.trickQueue.push(type);
-                        }
-                    } else {
-                        if (this.tricks[type] > 0) {
-                            this.tricks[type]--;
-                            const idx = this.trickQueue.indexOf(type);
-                            if (idx > -1) {
-                                this.trickQueue.splice(idx, 1);
-                            }
-                        }
-                    }
-                },
-
-                getTotalTricks() {
-                    return this.tricks.noodle + this.tricks.soup + this.tricks.topping;
-                },
-
-                resetGauges() {
-                    this.gauges = { noodle: 0, soup: 0, topping: 0 };
-                    this.tricks = { noodle: 0, soup: 0, topping: 0 };
-                    this.trickQueue = [];
-                },
-
-                toggleSecretIngredient(i) {
-                    this.secretIngredients = (this.secretIngredients === i) ? i - 1 : i;
-                },
-
-                canCookResult() {
-                    const cost = this.regions[this.selectedRegionIndex].cost;
-                    
-                    const noodleDiff = Math.max(0, cost.noodle - this.tricks.noodle);
-                    const soupDiff = Math.max(0, cost.soup - this.tricks.soup);
-                    const toppingDiff = Math.max(0, cost.topping - this.tricks.topping);
-                    
-                    const totalSecretsNeeded = noodleDiff + soupDiff + toppingDiff;
-
-                    if (totalSecretsNeeded === 0) {
-                        return { possible: true, secretsNeeded: 0, message: "Tricks ready. No wildcards needed!" };
-                    } else if (totalSecretsNeeded <= 2 && this.secretIngredients >= totalSecretsNeeded) {
-                        return { possible: true, secretsNeeded: totalSecretsNeeded, message: `Tricks missing. Ready to use ${totalSecretsNeeded} wildcard(s).` };
-                    } else {
-                        return { possible: false, secretsNeeded: totalSecretsNeeded, message: `Need ${totalSecretsNeeded} more Trick(s) / Wildcard(s) to prepare.` };
-                    }
-                },
-
-                cookRamen() {
-                    const validation = this.canCookResult();
-                    if (!validation.possible) {
-                        alert("Cannot cook Tasting Party Ramen! Please collect more Tricks or Wildcards.");
-                        return;
-                    }
-
-                    const cost = this.regions[this.selectedRegionIndex].cost;
-
-                    // Deduct Noodle Tricks
-                    if (this.tricks.noodle >= cost.noodle) {
-                        this.tricks.noodle -= cost.noodle;
-                    } else {
-                        this.tricks.noodle = 0;
-                    }
-
-                    // Deduct Soup Tricks
-                    if (this.tricks.soup >= cost.soup) {
-                        this.tricks.soup -= cost.soup;
-                    } else {
-                        this.tricks.soup = 0;
-                    }
-
-                    // Deduct Topping Tricks
-                    if (this.tricks.topping >= cost.topping) {
-                        this.tricks.topping -= cost.topping;
-                    } else {
-                        this.tricks.topping = 0;
-                    }
-
-                    // Deduct the Wildcard Secret Ingredients
-                    this.secretIngredients -= validation.secretsNeeded;
-
-                    // Rebuild trick queue based on remaining values
-                    this.trickQueue = [];
-                    for (let i = 0; i < this.tricks.noodle; i++) this.trickQueue.push('noodle');
-                    for (let i = 0; i < this.tricks.soup; i++) this.trickQueue.push('soup');
-                    for (let i = 0; i < this.tricks.topping; i++) this.trickQueue.push('topping');
-
-                    this.cookLog = `${this.regions[this.selectedRegionIndex].dish} has been served! Active bonus: ${this.regions[this.selectedRegionIndex].buff}`;
-                }
-            }
-        }
-    </script>
-</body>
-</html>
+    </html>
