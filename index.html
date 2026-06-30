@@ -6,8 +6,8 @@
     <title>Tracen-ken Companion & Progression Guide</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Alpine.js (Stable 3.15.x) -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.15.12/dist/cdn.min.js"></script>
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
@@ -32,7 +32,7 @@
             overflow-x: hidden;
         }
 
-        /* Prevent layout flashes before Alpine initializes */
+        /* Prevent flashing before Alpine initializes */
         [x-cloak] {
             display: none !important;
         }
@@ -93,7 +93,7 @@
         }
     </style>
 </head>
-<body class="text-slate-800 min-h-screen pb-24" x-data="companionApp">
+<body class="text-slate-800 min-h-screen pb-24" x-data="companionApp()">
 
     <!-- Warm Kitchen Steam Effect -->
     <div class="steam-container">
@@ -130,7 +130,7 @@
     <main class="relative z-10 max-w-md mx-auto px-4 mt-6">
 
         <!-- ================= TAB: STRATEGIC PROGRESSION GUIDE ================= -->
-        <div x-cloak x-show="currentTab === 'guide'" x-transition:enter="transition ease-out duration-200" class="space-y-6">
+        <div x-cloak x-show="currentTab === 'guide'" class="space-y-6">
             
             <!-- Strategic Core Concept -->
             <div class="glass-panel rounded-2xl p-5 relative overflow-hidden">
@@ -149,7 +149,7 @@
                 <div>
                     <h4 class="font-bold text-xs text-emerald-800 uppercase tracking-wider">Top Rental Priority</h4>
                     <p class="text-xs text-emerald-700 leading-relaxed mt-1">
-                        Always borrow SSR Tazuna Hayakawa [一杯のノスタルジア]. She raises your default Learning Gauge gain per turn from 3 to 10, hands out two free Secret Ingredients during date interactions, and maxes out your gauge every turn during Summer Camp.
+                        Always borrow SSR Tazuna Hayakawa. She raises your default Learning Gauge gain per turn from 3 to 10, hands out two free Secret Ingredients during date interactions, and maxes out your gauge every turn during Summer Camp.
                     </p>
                 </div>
             </div>
@@ -252,7 +252,7 @@
         </div>
 
         <!-- ================= TAB: COMPANION & SIMULATOR ================= -->
-        <div x-cloak x-show="currentTab === 'tracker'" x-transition:enter="transition ease-out duration-200" class="space-y-6">
+        <div x-cloak x-show="currentTab === 'tracker'" class="space-y-6">
             
             <!-- Learning Gauge Tracker -->
             <div class="glass-panel rounded-2xl p-5">
@@ -379,13 +379,17 @@
                     Verify ingredient requirements and simulate cooking your regional recipes.
                 </p>
 
-                <!-- Select Region -->
+                <!-- Select Region (Hardcoded Options to avoid templates parsing errors inside standard select elements) -->
                 <div class="mb-4">
                     <label class="block text-[11px] font-bold text-slate-600 mb-1">Region Selection</label>
                     <select x-model.number="selectedRegionIndex" class="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-500">
-                        <template x-for="(region, index) in regions" :key="index">
-                            <option :value="index" x-text="`${region.name} (${region.era})`"></option>
-                        </template>
+                        <option value="0">Sapporo (札幌) (Junior/Senior)</option>
+                        <option value="1">Hakodate (函館) (Junior/Senior)</option>
+                        <option value="2">Niigata (新潟) (Junior/Senior)</option>
+                        <option value="3">Fukushima (福島) (Junior/Senior)</option>
+                        <option value="4">Tokyo (東京) (Junior/Senior)</option>
+                        <option value="5">Kyoto (京都) (Classic/Senior)</option>
+                        <option value="6">Hanshin (阪神) (Classic/Senior)</option>
                     </select>
                 </div>
 
@@ -436,7 +440,7 @@
         </div>
 
         <!-- ================= TAB: DATA REFERENCE ================= -->
-        <div x-cloak x-show="currentTab === 'data'" x-transition:enter="transition ease-out duration-200" class="space-y-6">
+        <div x-cloak x-show="currentTab === 'data'" class="space-y-6">
             
             <!-- Link Characters Panel -->
             <div class="glass-panel rounded-2xl p-4">
@@ -551,10 +555,10 @@
 
     </main>
 
-    <!-- Interactive JS Controller -->
+    <!-- Global-scoped Interactive JS Model -->
     <script>
-        document.addEventListener('alpine:init', () => {
-            Alpine.data('companionApp', () => ({
+        function companionApp() {
+            return {
                 currentTab: 'guide',
                 
                 gauges: {
@@ -694,8 +698,8 @@
 
                     this.cookLog = `${this.regions[this.selectedRegionIndex].dish} has been served! Active bonus: ${this.regions[this.selectedRegionIndex].buff}`;
                 }
-            }));
-        });
+            };
+        }
     </script>
 </body>
 </html>
